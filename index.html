@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PyLearn">
+  <meta name="theme-color" content="#0a0e1a">
+  <title>PyLearn 🐍</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    :root{
+      --bg:#0a0e1a; --s1:#111827; --s2:#0f172a; --s3:#0d1117;
+      --bd:#1e293b; --t1:#e2e8f0; --t2:#cbd5e1; --tm:#64748b; --ts:#475569;
+      --g:#00ff88; --b:#06b6d4; --r:#ef4444; --y:#fbbf24; --o:#f97316;
+      --font:'Courier New',monospace;
+    }
+    html,body{height:100%;overflow-x:hidden}
+    body{font-family:var(--font);background:var(--bg);color:var(--t1);max-width:480px;margin:0 auto;
+      padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+    h1{font-size:26px;font-weight:900;line-height:1.2}
+    h2{font-size:17px;font-weight:800}
+    p{font-size:14px;line-height:1.75;color:var(--t2)}
+    strong{color:var(--t1)}
+    a{color:var(--b);text-decoration:none}
+
+    /* ── LAYOUT ── */
+    .pad{padding:20px}
+    .pad-sm{padding:12px 20px}
+    .stack{display:flex;flex-direction:column;gap:12px}
+    .row{display:flex;align-items:center;gap:10px}
+    .grow{flex:1}
+
+    /* ── NAVBAR ── */
+    .nav{position:sticky;top:0;z-index:99;background:var(--bg);
+      border-bottom:1px solid var(--bd);padding:14px 20px;
+      display:flex;align-items:center;gap:12px}
+    .back{background:none;border:none;color:var(--tm);font-size:22px;
+      cursor:pointer;padding:0;font-family:var(--font);line-height:1}
+
+    /* ── BUTTONS ── */
+    .btn{width:100%;border:none;border-radius:14px;padding:15px;font-size:15px;
+      font-weight:800;cursor:pointer;font-family:var(--font);transition:opacity .15s}
+    .btn-g{background:linear-gradient(135deg,var(--g),var(--b));color:#000}
+    .btn-g:disabled{background:var(--s1);color:var(--ts);cursor:not-allowed}
+    .btn-outline{background:var(--s1);border:1px solid var(--bd);color:var(--t2)}
+    .btn-sm{width:auto;padding:9px 16px;font-size:12px;border-radius:10px}
+
+    /* ── CARDS ── */
+    .card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px}
+    .card-green{background:linear-gradient(135deg,#052e16,#064e3b);border-color:#00ff8833}
+    .card-blue{background:#0d1a2d;border:1px solid #1e3a5f}
+    .card-red{background:#1c0a0a;border-color:#ef444444}
+    .card-yellow{background:#1c1208;border-color:#f5940044}
+
+    /* ── TAGS / BADGES ── */
+    .tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ts)}
+    .badge-g{background:rgba(0,255,136,.1);color:var(--g);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700}
+    .badge-b{background:rgba(6,182,212,.1);color:var(--b);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700}
+
+    /* ── PROGRESS BAR ── */
+    .prog-track{background:var(--bd);border-radius:99px;height:6px}
+    .prog-fill{background:linear-gradient(90deg,var(--g),var(--b));border-radius:99px;height:6px;transition:width .6s}
+
+    /* ── CODE BLOCKS ── */
+    .cblock{border-radius:12px;overflow:hidden;margin:14px 0}
+    .cblock-head{background:var(--s2);border:1px solid var(--bd);border-bottom:none;
+      padding:7px 14px;display:flex;align-items:center;justify-content:space-between}
+    .cblock-code{background:var(--s3);border:1px solid var(--bd);padding:12px 14px}
+    .cblock-out{background:#020617;border:1px solid var(--bd);border-top:1px solid #0d2040;padding:10px 14px}
+    .cblock-code pre,.cblock-out pre{font-family:var(--font);font-size:13px;line-height:1.75;
+      white-space:pre-wrap;word-break:break-word;margin:0}
+    .cblock-out pre{color:#a3e635}
+
+    /* ── STEP DOTS ── */
+    .dots{display:flex;gap:6px;justify-content:center;margin-bottom:4px}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--bd)}
+    .dot.on{background:var(--g)}
+    .dot.done{background:var(--b)}
+
+    /* ── QUIZ OPTIONS ── */
+    .qopt{width:100%;background:var(--s1);border:1px solid var(--bd);border-radius:12px;
+      padding:13px 16px;text-align:left;font-size:13px;color:var(--t2);
+      cursor:pointer;display:flex;align-items:flex-start;gap:10px;
+      font-family:var(--font);transition:all .15s;line-height:1.5}
+    .qopt.sel{background:#1e293b;border-color:var(--b);color:var(--b)}
+    .qopt.ok{background:#052e16;border-color:var(--g);color:var(--g)}
+    .qopt.bad{background:#1c0a0a;border-color:var(--r);color:var(--r)}
+    .qletter{min-width:22px;height:22px;border-radius:6px;background:var(--bd);
+      display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--ts);flex-shrink:0;margin-top:1px}
+
+    /* ── CODE EDITOR ── */
+    .editor{width:100%;min-height:130px;background:var(--s3);border:1px solid var(--bd);
+      border-radius:12px;padding:14px;font-family:var(--font);font-size:13px;
+      color:#7dd3fc;line-height:1.75;resize:vertical;outline:none;-webkit-appearance:none;
+      caret-color:var(--g)}
+    .editor:focus{border-color:var(--b)}
+
+    /* ── FEEDBACK ── */
+    .feedback{border-radius:12px;padding:14px;margin:12px 0;font-size:13px;line-height:1.7}
+    .feedback strong{font-size:15px;display:block;margin-bottom:6px}
+
+    /* ── SPINNER ── */
+    .spin{width:18px;height:18px;border:2px solid var(--bd);border-top-color:var(--g);
+      border-radius:50%;animation:sp .7s linear infinite;display:inline-block;vertical-align:middle}
+    @keyframes sp{to{transform:rotate(360deg)}}
+
+    /* ── HOME LESSON CARDS ── */
+    .lcard{background:var(--s1);border:1px solid var(--bd);border-radius:14px;
+      padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;
+      transition:transform .12s;text-align:left;width:100%}
+    .lcard:active{transform:scale(.97)}
+    .lcard.done{background:linear-gradient(135deg,#052e16,#064e3b);border-color:#00ff8833}
+    .lcard.locked{opacity:.4;cursor:not-allowed}
+    .licon{width:46px;height:46px;border-radius:12px;background:var(--bd);
+      display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+
+    /* ── SECTION DIVIDER ── */
+    .sdiv{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g);
+      display:flex;align-items:center;gap:8px;margin:20px 0 12px}
+    .sdiv::after{content:'';flex:1;height:1px;background:#00ff8820}
+
+    /* ── API KEY SETUP ── */
+    .api-input{width:100%;background:var(--s3);border:1px solid var(--bd);border-radius:12px;
+      padding:12px 14px;font-family:var(--font);font-size:13px;color:var(--t1);
+      outline:none;-webkit-appearance:none}
+    .api-input:focus{border-color:var(--b)}
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar{width:0}
+
+    /* ── HINT ── */
+    .hint{background:#0f1a2e;border:1px solid #1e3a5f;border-radius:10px;
+      padding:12px;font-size:12px;color:#7dd3fc;display:none}
+    .hint.shown{display:block}
+
+    /* ── MISC ── */
+    .sep{height:1px;background:var(--bd);margin:16px 0}
+    .center{text-align:center}
+    .muted{color:var(--tm);font-size:12px}
+    .green{color:var(--g)} .blue{color:var(--b)} .red{color:var(--r)} .yellow{color:var(--y)}
+    .mb8{margin-bottom:8px} .mb12{margin-bottom:12px} .mb16{margin-bottom:16px} .mb20{margin-bottom:20px}
+    .mt8{margin-top:8px} .mt12{margin-top:12px} .mt16{margin-top:16px}
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ─────────────────────────────────────────────
+//  LESSONS DATA
+// ─────────────────────────────────────────────
+const LESSONS = [
+  {
+    id:0, emoji:"👋", title:"Hello, World!", concept:"Printing Output",
+    content:[
+      {type:"text",text:"Every coder's first step is making the computer say something. In Python you use the <strong>print()</strong> function. Whatever you put inside the parentheses (in quotes) gets displayed on screen."},
+      {type:"code",code:`print("Hello, World!")\nprint("I'm learning Python!")\nprint("This is awesome 🔥")`,out:`Hello, World!\nI'm learning Python!\nThis is awesome 🔥`},
+      {type:"text",text:"The text inside quotes is called a <strong>string</strong>. You can use single or double quotes — both work. You can print as many lines as you want, just call print() again."},
+      {type:"code",code:`print('Single quotes work too!')\nprint("So do double quotes")`,out:`Single quotes work too!\nSo do double quotes`},
+      {type:"text",text:"You can also print numbers directly — no quotes needed for those."},
+      {type:"code",code:`print(42)\nprint(3.14)`,out:`42\n3.14`},
+    ],
+    quizzes:[
+      {q:"What will this output?\n\nprint(\"Python rocks\")",opts:["rocks","\"Python rocks\"","Python rocks","Nothing"],ans:2,exp:"print() outputs whatever is inside the parentheses, without the surrounding quotes."},
+      {q:"Which line is valid Python?",opts:["Print(\"Hello\")","print \"Hello\"","print(\"Hello\")","echo(\"Hello\")"],ans:2,exp:"print() must be lowercase and the text must be inside parentheses with quotes."},
+    ],
+    challenge:{
+      title:"Your first program",
+      desc:"Write 3 print() statements that output:\n1. Your name\n2. Your favorite food\n3. The number 2025",
+      hint:"Use print() three times. Text needs quotes, but numbers don't.",
+      starter:"# Write your 3 print statements below\n",
+      task:"Write 3 print() statements: one for a name (text), one for a food (text), one for the number 2025 (no quotes needed for numbers).",
+      expected:"(your name)\n(your fav food)\n2025"
+    }
+  },
+  {
+    id:1, emoji:"📦", title:"Variables", concept:"Storing Data",
+    content:[
+      {type:"text",text:"A <strong>variable</strong> is a named container for storing a value. You create one with a single = sign (called the assignment operator). The name goes on the left, the value on the right."},
+      {type:"code",code:`name = "Jordan"\nage = 21\nheight = 5.9\n\nprint(name)\nprint(age)`,out:`Jordan\n21`},
+      {type:"text",text:"Variable names can contain letters, numbers, and underscores, but <strong>cannot start with a number</strong>. They're case-sensitive: <strong>name</strong> and <strong>Name</strong> are different variables."},
+      {type:"code",code:`# Good names\nmy_name = "Sam"\nfavoriteColor = "blue"\nscore1 = 100\n\n# This would crash:\n# 1score = 100  ← starts with number!`,out:""},
+      {type:"text",text:"You can update a variable by reassigning it. The old value is replaced. You can also use a variable inside another expression."},
+      {type:"code",code:`score = 50\nprint(score)   # 50\n\nscore = 75     # overwrite it\nprint(score)   # 75\n\nbonus = 10\nfinal = score + bonus\nprint(final)`,out:`50\n75\n85`},
+    ],
+    quizzes:[
+      {q:"How do you store the value 100 in a variable called points?",opts:["100 = points","points == 100","points = 100","var points = 100"],ans:2,exp:"In Python, assignment is name = value. The variable name always goes on the left."},
+      {q:"Which is a valid variable name?",opts:["2fast","my-score","first name","player_1"],ans:3,exp:"Variable names can use letters, numbers, and underscores. No spaces, hyphens, or starting with a digit."},
+    ],
+    challenge:{
+      title:"Your profile",
+      desc:"Create 3 variables:\n• name — your name as a string\n• age — your age as a number\n• fav_language — set it to \"Python\"\n\nThen print all three.",
+      hint:"Use = to assign. Strings need quotes. Numbers don't.",
+      starter:"# Create your 3 variables here\n\n# Then print them\n",
+      task:"Create variables: name (string), age (integer), fav_language = 'Python'. Then print all three on separate lines.",
+      expected:"(your name)\n(your age)\nPython"
+    }
+  },
+  {
+    id:2, emoji:"🔢", title:"Numbers & Math", concept:"Operators & Calculations",
+    content:[
+      {type:"text",text:"Python handles all the math you'd expect, plus a few extras. The basic operators are + - * / and there are two more powerful ones you'll use a lot."},
+      {type:"code",code:`print(10 + 3)   # 13  - addition\nprint(10 - 3)   # 7   - subtraction\nprint(10 * 3)   # 30  - multiplication\nprint(10 / 3)   # 3.33 - division\nprint(10 // 3)  # 3   - floor division (no decimal)\nprint(10 % 3)   # 1   - modulo (remainder)\nprint(2 ** 8)   # 256 - power (2 to the 8th)`,out:`13\n7\n30\n3.3333333333333335\n3\n1\n256`},
+      {type:"text",text:"Python has two number types: <strong>int</strong> (whole numbers like 5, 100) and <strong>float</strong> (decimals like 3.14, 99.9). Division always returns a float. You can store results in variables."},
+      {type:"code",code:`price = 49.99\ntax_rate = 0.08\ntax = price * tax_rate\ntotal = price + tax\n\nprint(total)`,out:`53.9892`},
+      {type:"text",text:"Python follows standard <strong>order of operations</strong> (PEMDAS). Use parentheses to control what runs first."},
+      {type:"code",code:`print(2 + 3 * 4)    # 14, not 20\nprint((2 + 3) * 4)  # 20`,out:`14\n20`},
+    ],
+    quizzes:[
+      {q:"What does this output?\n\nprint(2 ** 4)",opts:["8","16","24","6"],ans:1,exp:"** means 'to the power of'. 2⁴ = 2×2×2×2 = 16."},
+      {q:"What does 17 % 5 return?",opts:["3","2","1","0"],ans:1,exp:"% is modulo — it gives the remainder. 17 ÷ 5 = 3 remainder 2. So 17 % 5 = 2."},
+    ],
+    challenge:{
+      title:"Tip calculator",
+      desc:"Calculate a 18% tip on a $64 meal.\n\n• Store the meal price in a variable\n• Calculate the tip (price * 0.18)\n• Print both the tip amount and the total (price + tip)",
+      hint:"tip = meal_price * 0.18\ntotal = meal_price + tip",
+      starter:"meal_price = 64\n\n# Calculate tip (18%)\n\n# Print tip amount\n\n# Print total\n",
+      task:"Given meal_price = 64, calculate tip = meal_price * 0.18 and total = meal_price + tip. Print both tip and total.",
+      expected:"11.52\n75.52"
+    }
+  },
+  {
+    id:3, emoji:"✂️", title:"Strings", concept:"Text Manipulation",
+    content:[
+      {type:"text",text:"Strings are how Python handles text. You already know how to print them — now let's do more powerful things with them. Strings have built-in <strong>methods</strong> (functions that belong to the string)."},
+      {type:"code",code:`msg = "hello world"\n\nprint(msg.upper())       # all caps\nprint(msg.lower())       # all lowercase\nprint(msg.capitalize())  # First letter cap\nprint(msg.title())       # Every Word Cap\nprint(len(msg))          # number of characters\nprint(msg.replace("world", "Python"))`,out:`HELLO WORLD\nhello world\nHello world\nHello World\n11\nhello Python`},
+      {type:"text",text:"<strong>f-strings</strong> (formatted strings) are the best way to mix variables into text. Put an f before the quote, then use curly braces {} around any variable."},
+      {type:"code",code:`name = "Alex"\nage = 23\ncity = "NYC"\n\nprint(f"My name is {name}.")\nprint(f"I am {age} years old.")\nprint(f"{name} lives in {city}.")`,out:`My name is Alex.\nI am 23 years old.\nAlex lives in NYC.`},
+      {type:"text",text:"You can also do math inside f-string curly braces, and access individual characters using <strong>indexing</strong> (counting starts at 0!)."},
+      {type:"code",code:`word = "Python"\nprint(word[0])   # first letter\nprint(word[-1])  # last letter\nprint(word[0:3]) # slice: first 3 chars`,out:`P\nn\nPyt`},
+    ],
+    quizzes:[
+      {q:"What does this output?\n\nprint(\"hello\".upper())",opts:["hello","HELLO","Hello","\"HELLO\""],ans:1,exp:".upper() converts all characters to uppercase."},
+      {q:"What does len(\"Python\") return?",opts:["5","6","7","P"],ans:1,exp:"len() counts characters. P-y-t-h-o-n = 6 characters."},
+    ],
+    challenge:{
+      title:"Personal bio",
+      desc:"Create variables for your name, age, and city. Then use an f-string to print:\n\n\"Hi! I'm [name], [age] years old, from [city].\"\n\nAlso print your name in ALL CAPS on the next line.",
+      hint:"Use f\"...{variable}...\" for the sentence.\nUse name.upper() for the caps version.",
+      starter:`name = "Your Name"\nage = 20\ncity = "Your City"\n\n# Print the f-string sentence\n\n# Print name in ALL CAPS\n`,
+      task:"Use variables name, age, city in an f-string to print a sentence like \"Hi! I'm [name], [age] years old, from [city].\" Then print name.upper() on the next line.",
+      expected:"Hi! I'm [name], [age] years old, from [city].\n[NAME]"
+    }
+  },
+  {
+    id:4, emoji:"💬", title:"User Input", concept:"Interactive Programs",
+    content:[
+      {type:"text",text:"So far your programs have used fixed data. With <strong>input()</strong> you can ask the user to type something. Whatever they type gets stored as a string."},
+      {type:"code",code:`name = input("What's your name? ")\nprint(f"Nice to meet you, {name}!")`,out:`What's your name? Jordan\nNice to meet you, Jordan!`},
+      {type:"text",text:"<strong>Important:</strong> input() always returns a <strong>string</strong>, even if the user types a number. To use it as a number, you must convert it with <strong>int()</strong> or <strong>float()</strong>."},
+      {type:"code",code:`age_str = input("How old are you? ")\nage = int(age_str)         # convert to integer\nnext_year = age + 1\n\nprint(f"Next year you'll be {next_year}!")`,out:`How old are you? 22\nNext year you'll be 23!`},
+      {type:"text",text:"You can chain the conversion on one line. Use <strong>float()</strong> if the number might have a decimal point."},
+      {type:"code",code:`price = float(input("Enter price: "))\ndiscounted = price * 0.9\nprint(f"10% off: ${discounted:.2f}")`,out:`Enter price: 49.99\n10% off: $44.99`},
+    ],
+    quizzes:[
+      {q:"What type does input() always return?",opts:["int","float","string","number"],ans:2,exp:"input() always returns a string, even if the user types a number. You have to convert it manually."},
+      {q:"How do you convert the string \"42\" to an integer?",opts:["string(\"42\")","convert(\"42\")","int(\"42\")","integer(\"42\")"],ans:2,exp:"int() converts a string (or float) to a whole number integer."},
+    ],
+    challenge:{
+      title:"Number doubler",
+      desc:"Write a program that:\n1. Asks the user to enter a number\n2. Converts it to a float\n3. Doubles it\n4. Prints: \"Double that is: [result]\"",
+      hint:"num = float(input(\"Enter a number: \"))\ndoubled = num * 2",
+      starter:`# Ask for a number\n\n# Convert to float and double it\n\n# Print the result\n`,
+      task:"Use input() to get a number, convert with float(), multiply by 2, and print 'Double that is: [result]'",
+      expected:"Enter a number: 7\nDouble that is: 14.0"
+    }
+  },
+  {
+    id:5, emoji:"❓", title:"If / Elif / Else", concept:"Making Decisions",
+    content:[
+      {type:"text",text:"Your code can make decisions with <strong>if statements</strong>. If the condition is true, one block of code runs. Otherwise, the <strong>else</strong> block runs. <strong>Indentation</strong> (the 4 spaces before the code) tells Python what belongs inside the block."},
+      {type:"code",code:`age = 20\n\nif age >= 18:\n    print("You can vote!")\nelse:\n    print("Not old enough yet.")`,out:`You can vote!`},
+      {type:"text",text:"Comparison operators: == (equals), != (not equals), > (greater), < (less), >= (greater or equal), <= (less or equal). Use <strong>elif</strong> to add more conditions in the middle."},
+      {type:"code",code:`score = 78\n\nif score >= 90:\n    print("A — Excellent!")\nelif score >= 80:\n    print("B — Great job!")\nelif score >= 70:\n    print("C — Not bad.")\nelse:\n    print("Keep studying!")`,out:`C — Not bad.`},
+      {type:"text",text:"You can combine conditions with <strong>and</strong> / <strong>or</strong>. Use <strong>not</strong> to flip a condition."},
+      {type:"code",code:`temp = 22\nraining = False\n\nif temp > 20 and not raining:\n    print("Perfect day for a walk!")\nelse:\n    print("Maybe stay inside.")`,out:`Perfect day for a walk!`},
+    ],
+    quizzes:[
+      {q:"x = 5\n\nif x > 10:\n    print(\"big\")\nelse:\n    print(\"small\")\n\nWhat prints?",opts:["big","small","big\nsmall","Nothing"],ans:1,exp:"5 is not greater than 10, so Python skips the if block and runs else, printing 'small'."},
+      {q:"Which operator checks if two values are EQUAL?",opts:["=","=>","==","!="],ans:2,exp:"== checks equality. A single = is assignment (stores a value). Don't mix them up!"},
+    ],
+    challenge:{
+      title:"Positive, negative, or zero?",
+      desc:"Write a program that checks a number and prints:\n• \"Positive\" if > 0\n• \"Negative\" if < 0\n• \"Zero\" if it equals 0\n\nTest it with number = -7",
+      hint:"Use if / elif / else with >, <, and == comparisons.",
+      starter:`number = -7\n\n# Check and print the result\n`,
+      task:"Given number = -7, use if/elif/else to print 'Positive', 'Negative', or 'Zero' based on the value.",
+      expected:"Negative"
+    }
+  },
+  {
+    id:6, emoji:"📋", title:"Lists", concept:"Storing Collections",
+    content:[
+      {type:"text",text:"A <strong>list</strong> holds multiple items in one variable. Items are written in square brackets [], separated by commas. Lists can hold strings, numbers, or a mix."},
+      {type:"code",code:`fruits = ["apple", "mango", "grape", "banana"]\nnumbers = [10, 25, 3, 99, 7]\nmixed = ["Alice", 22, True, 3.14]\n\nprint(fruits)\nprint(len(fruits))    # number of items`,out:`['apple', 'mango', 'grape', 'banana']\n4`},
+      {type:"text",text:"Access items with their <strong>index</strong> (position number). Counting starts at <strong>0</strong>, not 1. Negative indexes count from the end."},
+      {type:"code",code:`fruits = ["apple", "mango", "grape"]\n\nprint(fruits[0])   # first item\nprint(fruits[1])   # second item\nprint(fruits[-1])  # last item`,out:`apple\nmango\ngrape`},
+      {type:"text",text:"Lists are <strong>mutable</strong> — you can change them. Add items with <strong>.append()</strong>, remove with <strong>.remove()</strong>, sort with <strong>.sort()</strong>."},
+      {type:"code",code:`cart = ["shoes", "shirt"]\n\ncart.append("hat")      # add to end\ncart.append("socks")\nprint(cart)\n\ncart.remove("shirt")    # remove item\nprint(cart)\n\ncart.sort()             # alphabetical\nprint(cart)`,out:`['shoes', 'shirt', 'hat', 'socks']\n['shoes', 'hat', 'socks']\n['hat', 'shoes', 'socks']`},
+    ],
+    quizzes:[
+      {q:"items = [\"a\", \"b\", \"c\"]\n\nWhat does items[0] return?",opts:["b","c","a","1"],ans:2,exp:"Lists are zero-indexed. Index 0 is always the first item."},
+      {q:"How do you add 'dog' to the end of a list called pets?",opts:["pets.add(\"dog\")","pets[end] = \"dog\"","pets.append(\"dog\")","pets.push(\"dog\")"],ans:2,exp:".append() adds an item to the end of a list. It's one of the most-used list methods."},
+    ],
+    challenge:{
+      title:"My hobbies list",
+      desc:"Create a list called hobbies with at least 3 things you enjoy.\n\nThen:\n1. Print the whole list\n2. Print just the first item\n3. Add a 4th hobby with .append()\n4. Print the final length with len()",
+      hint:"hobbies = [\"reading\", \"gaming\", \"cooking\"]\nprint(hobbies[0])\nhobbies.append(\"hiking\")",
+      starter:`# Create your hobbies list\n\n# Print the whole list\n\n# Print the first item\n\n# Append a new hobby\n\n# Print the length\n`,
+      task:"Create a list called hobbies with 3+ items. Print the full list, print hobbies[0], append a new item, then print len(hobbies).",
+      expected:"['...', '...', '...']\n...\n['...', '...', '...', '...']\n4"
+    }
+  },
+  {
+    id:7, emoji:"🔁", title:"For Loops", concept:"Repeating with Sequences",
+    content:[
+      {type:"text",text:"A <strong>for loop</strong> repeats code for each item in a sequence. It's one of the most powerful tools in Python. The variable after <strong>for</strong> takes on each value one by one."},
+      {type:"code",code:`fruits = ["apple", "mango", "grape"]\n\nfor fruit in fruits:\n    print(f"I like {fruit}")`,out:`I like apple\nI like mango\nI like grape`},
+      {type:"text",text:"<strong>range()</strong> generates a sequence of numbers. range(5) gives 0,1,2,3,4. range(1,6) gives 1,2,3,4,5. range(0,10,2) gives 0,2,4,6,8 (stepping by 2)."},
+      {type:"code",code:`# Count 1 to 5\nfor i in range(1, 6):\n    print(i)\n\n# Count by 2s\nfor i in range(0, 11, 2):\n    print(i, end=" ")`,out:`1\n2\n3\n4\n5\n0 2 4 6 8 10`},
+      {type:"text",text:"You can build things up inside a loop, like accumulating a total or building a string."},
+      {type:"code",code:`numbers = [4, 7, 2, 9, 1]\ntotal = 0\n\nfor n in numbers:\n    total = total + n\n\nprint(f"Sum: {total}")\nprint(f"Count: {len(numbers)}")\nprint(f"Average: {total / len(numbers)}")`,out:`Sum: 23\nCount: 5\nAverage: 4.6`},
+    ],
+    quizzes:[
+      {q:"How many times does this loop run?\n\nfor i in range(5):\n    print(i)",opts:["4 times","5 times","6 times","1 time"],ans:1,exp:"range(5) gives [0,1,2,3,4] — five numbers, so the loop runs 5 times."},
+      {q:"What does range(2, 6) produce?",opts:["2,3,4,5,6","1,2,3,4,5,6","2,3,4,5","2,4,6"],ans:2,exp:"range(start, stop) goes from start up to (but NOT including) stop. So range(2,6) = 2,3,4,5."},
+    ],
+    challenge:{
+      title:"Even number printer",
+      desc:"Using a for loop and range(), print all even numbers from 2 to 20 (inclusive).\n\nExpected output:\n2 4 6 8 10 12 14 16 18 20",
+      hint:"range(start, stop, step) — use a step of 2, starting at 2, stopping at 21.",
+      starter:`# Print even numbers 2 to 20 using a for loop\n`,
+      task:"Use a for loop with range() to print all even numbers from 2 to 20 inclusive. Each number on a new line (or space-separated).",
+      expected:"2\n4\n6\n8\n10\n12\n14\n16\n18\n20"
+    }
+  },
+  {
+    id:8, emoji:"⏳", title:"While Loops", concept:"Looping with Conditions",
+    content:[
+      {type:"text",text:"A <strong>while loop</strong> keeps repeating as long as a condition is true. Unlike a for loop that counts items, a while loop runs based on a condition. You need to make sure the condition eventually becomes false — or it loops forever!"},
+      {type:"code",code:`count = 1\n\nwhile count <= 5:\n    print(f"Count: {count}")\n    count = count + 1  # IMPORTANT: update count!\n\nprint("Done!")`,out:`Count: 1\nCount: 2\nCount: 3\nCount: 4\nCount: 5\nDone!`},
+      {type:"text",text:"<strong>break</strong> immediately exits the loop. <strong>continue</strong> skips the rest of the current iteration and moves to the next one."},
+      {type:"code",code:`# break example\nnum = 0\nwhile True:          # would run forever...\n    num += 1\n    if num == 4:\n        break        # ...but break saves us\n    print(num)`,out:`1\n2\n3`},
+      {type:"code",code:`# continue example — skip odd numbers\ni = 0\nwhile i < 8:\n    i += 1\n    if i % 2 != 0:\n        continue     # skip odds\n    print(i)`,out:`2\n4\n6\n8`},
+    ],
+    quizzes:[
+      {q:"When does a while loop stop?",opts:["After 10 iterations","When the condition is False","When break is used","Both B and C"],ans:3,exp:"A while loop stops either when the condition becomes False, or when a break statement is hit inside the loop."},
+      {q:"What does the break statement do?",opts:["Pauses the loop","Skips one iteration","Exits the loop immediately","Restarts the loop"],ans:2,exp:"break immediately exits the entire loop, jumping to whatever code comes after it."},
+    ],
+    challenge:{
+      title:"Countdown!",
+      desc:"Use a while loop to print a countdown from 10 down to 1, then print \"Blast off! 🚀\"",
+      hint:"Start with count = 10. Loop while count >= 1. Print count, then count -= 1.",
+      starter:`count = 10\n\n# Use a while loop to count down\n`,
+      task:"Use a while loop starting at count=10 to print 10, 9, 8... down to 1, then print 'Blast off! 🚀'.",
+      expected:"10\n9\n8\n7\n6\n5\n4\n3\n2\n1\nBlast off! 🚀"
+    }
+  },
+  {
+    id:9, emoji:"🧩", title:"Functions", concept:"Reusable Code Blocks",
+    content:[
+      {type:"text",text:"A <strong>function</strong> is a reusable block of code you give a name. You <strong>define</strong> it once with <strong>def</strong>, then <strong>call</strong> it as many times as you want. You've already used built-in functions like print() and len() — now you'll make your own."},
+      {type:"code",code:`def greet(name):\n    print(f"Hey, {name}! Welcome to Python.")\n\ngreet("Alex")\ngreet("Morgan")\ngreet("Sam")`,out:`Hey, Alex! Welcome to Python.\nHey, Morgan! Welcome to Python.\nHey, Sam! Welcome to Python.`},
+      {type:"text",text:"Functions can <strong>return</strong> a value back to whoever called them. This makes them much more powerful — you can use the result in other expressions."},
+      {type:"code",code:`def add(a, b):\n    return a + b\n\ndef square(n):\n    return n * n\n\nresult = add(10, 5)\nprint(result)          # 15\nprint(square(7))       # 49\nprint(add(square(3), square(4)))  # 25`,out:`15\n49\n25`},
+      {type:"text",text:"Functions can have <strong>default parameter values</strong> — used when a caller doesn't provide that argument."},
+      {type:"code",code:`def greet(name, greeting="Hello"):\n    print(f"{greeting}, {name}!")\n\ngreet("Jordan")           # uses default\ngreet("Alex", "Sup")      # overrides default`,out:`Hello, Jordan!\nSup, Alex!`},
+    ],
+    quizzes:[
+      {q:"What keyword is used to CREATE a function in Python?",opts:["function","create","make","def"],ans:3,exp:"def (short for 'define') is the keyword that creates a function in Python."},
+      {q:"What does the return statement do?",opts:["Prints a value","Ends the program","Sends a value back to the caller","Restarts the function"],ans:2,exp:"return sends a value out of the function back to where it was called. Without return, the function returns None."},
+    ],
+    challenge:{
+      title:"Build a calculator function",
+      desc:"Write a function called calculate(a, b, op) that:\n• Returns a + b when op is \"add\"\n• Returns a - b when op is \"sub\"\n• Returns a * b when op is \"mul\"\n\nThen test it:\nprint(calculate(10, 3, \"add\"))  → 13\nprint(calculate(10, 3, \"sub\"))  → 7\nprint(calculate(10, 3, \"mul\"))  → 30",
+      hint:"Use if/elif inside the function. Check: if op == \"add\": return a + b",
+      starter:`def calculate(a, b, op):\n    # Add your if/elif logic here\n    pass\n\nprint(calculate(10, 3, "add"))\nprint(calculate(10, 3, "sub"))\nprint(calculate(10, 3, "mul"))\n`,
+      task:"Write a function calculate(a, b, op) that uses if/elif to return a+b, a-b, or a*b based on op being 'add', 'sub', or 'mul'. Call it 3 times as shown.",
+      expected:"13\n7\n30"
+    }
+  },
+];
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let S = {
+  screen: "home",      // home | reading | quiz | challenge | done
+  lessonIdx: 0,
+  quizIdx: 0,           // 0 or 1
+  quizSel: null,
+  quizDone: false,
+  code: "",
+  checking: false,
+  feedback: null,       // { ok: bool, msg: string }
+  hintShown: false,
+  xp: 0,
+  progress: {},         // { "lessonIdx": { quizzes:[bool,bool], challenge:bool } }
+  apiKey: "",
+};
+
+function load() {
+  try {
+    S.xp = parseInt(localStorage.getItem("pl_xp") || "0");
+    S.progress = JSON.parse(localStorage.getItem("pl_prog") || "{}");
+    S.apiKey = localStorage.getItem("pl_key") || "";
+  } catch(e){}
+}
+
+function save() {
+  try {
+    localStorage.setItem("pl_xp", S.xp);
+    localStorage.setItem("pl_prog", JSON.stringify(S.progress));
+    localStorage.setItem("pl_key", S.apiKey);
+  } catch(e){}
+}
+
+load();
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+function isComplete(idx) {
+  const p = S.progress[idx];
+  return p && p.quizzes && p.quizzes.length === 2 && p.challenge !== undefined;
+}
+
+function isUnlocked(idx) {
+  return idx === 0 || isComplete(idx - 1);
+}
+
+function totalXP() {
+  // 10 XP per quiz, 30 XP per challenge (only first time)
+  let x = 0;
+  for (const [k, p] of Object.entries(S.progress)) {
+    if (p.quizzes) p.quizzes.forEach(q => { if (q !== undefined) x += 10; });
+    if (p.challenge !== undefined) x += 30;
+  }
+  return x;
+}
+
+function lessonsComplete() {
+  return LESSONS.filter((_,i) => isComplete(i)).length;
+}
+
+// ─────────────────────────────────────────────
+//  SYNTAX HIGHLIGHT
+// ─────────────────────────────────────────────
+function hl(raw) {
+  if (!raw) return "";
+  const lines = raw.split("\n");
+  return lines.map(line => {
+    // Find comment start outside strings
+    let inStr = false, sc = "", ci = -1;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (!inStr && (c==='"'||c==="'")) { inStr=true; sc=c; }
+      else if (inStr && c===sc) { inStr=false; }
+      else if (!inStr && c==="#") { ci=i; break; }
+    }
+    let code = ci>=0 ? line.slice(0,ci) : line;
+    const comment = ci>=0 ? line.slice(ci) : "";
+
+    code = code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+    // Protect strings
+    const strs = [];
+    code = code.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, m => {
+      strs.push(m);
+      return `\x01${strs.length-1}\x01`;
+    });
+
+    // Keywords
+    ["def","return","if","elif","else","for","while","in","and","or","not","break",
+     "continue","pass","True","False","None","import","from","class","with","as","try","except",
+     "print","input","len","range","int","float","str","append","remove","sort","type","round","abs"
+    ].forEach(kw => {
+      code = code.replace(new RegExp(`\\b(${kw})\\b`,"g"),
+        `<span style="color:#7dd3fc">$1</span>`);
+    });
+
+    // Numbers
+    code = code.replace(/\b(\d+\.?\d*)\b/g,
+      `<span style="color:#f97316">$1</span>`);
+
+    // Restore strings
+    strs.forEach((s,i) => {
+      code = code.replace(`\x01${i}\x01`,
+        `<span style="color:#fbbf24">${s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</span>`);
+    });
+
+    const commentHtml = comment
+      ? `<span style="color:#4b5563">${comment.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</span>`
+      : "";
+
+    return code + commentHtml;
+  }).join("\n");
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// ─────────────────────────────────────────────
+//  CONTENT RENDERER
+// ─────────────────────────────────────────────
+function renderBlock(b) {
+  if (b.type === "text") {
+    return `<p class="mb16">${b.text}</p>`;
+  }
+  if (b.type === "code") {
+    const hasOut = b.out && b.out.trim();
+    return `<div class="cblock">
+      <div class="cblock-head">
+        <span class="tag">Python</span>
+        <span style="font-size:11px;color:#4b5563">code example</span>
+      </div>
+      <div class="cblock-code"><pre>${hl(b.code)}</pre></div>
+      ${hasOut ? `<div class="cblock-out"><div style="font-size:10px;color:#4b5563;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Output</div><pre>${escHtml(b.out)}</pre></div>` : ""}
+    </div>`;
+  }
+  return "";
+}
+
+// ─────────────────────────────────────────────
+//  SCREENS
+// ─────────────────────────────────────────────
+
+function renderHome() {
+  const xp = totalXP();
+  const done = lessonsComplete();
+  const pct = Math.round((done / LESSONS.length) * 100);
+
+  let lessonCards = LESSONS.map((l,i) => {
+    const c = isComplete(i);
+    const u = isUnlocked(i);
+    const p = S.progress[i] || {};
+    const q1 = p.quizzes ? p.quizzes[0] : undefined;
+    const q2 = p.quizzes ? p.quizzes[1] : undefined;
+    const ch = p.challenge;
+
+    const steps = [q1,q2,ch].map((v,si) => {
+      const cl = v !== undefined ? (si<2 ? "done":"done") : (u ? "on" : "");
+      return `<span class="dot ${cl}"></span>`;
+    }).join("");
+
+    return `<button class="lcard ${c?"done":""} ${!u?"locked":""}" onclick="${u?`go('reading',${i})`:""}">
+      <div class="licon">${c?"✅":!u?"🔒":l.emoji}</div>
+      <div class="grow">
+        <div class="tag" style="margin-bottom:3px">Lesson ${i+1} · ${l.concept}</div>
+        <div style="font-size:15px;font-weight:700;color:${!u?"var(--ts)":"var(--t1)"}">${l.title}</div>
+        <div class="dots" style="justify-content:flex-start;margin:6px 0 0">${steps}</div>
+      </div>
+      ${u?`<span style="color:${c?"var(--g)":"var(--bd)"};font-size:20px">›</span>`:""}
+    </button>`;
+  }).join("");
+
+  const allDone = done === LESSONS.length;
+
+  return `<div style="padding:24px 20px 60px">
+    <!-- Header -->
+    <div style="margin-bottom:24px">
+      <div class="row mb8">
+        <span style="font-size:26px">🐍</span>
+        <span style="font-size:10px;letter-spacing:3px;color:var(--g);text-transform:uppercase;font-weight:700">PyLearn</span>
+      </div>
+      <h1 style="background:linear-gradient(135deg,#fff 40%,var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">
+        Learn Python.<br>No fluff.
+      </h1>
+      <p style="color:var(--ts);font-size:13px">10 lessons · quizzes · coding challenges · AI feedback</p>
+    </div>
+
+    <!-- XP card -->
+    <div class="card mb16">
+      <div class="row mb8">
+        <span style="font-size:12px;color:var(--tm)">Progress</span>
+        <span class="grow"></span>
+        <span class="badge-g">⚡ ${xp} XP</span>
+        <span class="badge-b">${done}/${LESSONS.length} done</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="muted mt8">${pct}% complete</div>
+    </div>
+
+    <!-- API Key -->
+    <div class="card mb16" style="border-color:${S.apiKey?"#00ff8833":"var(--bd)"}">
+      <div class="row">
+        <span style="font-size:18px">${S.apiKey?"🤖":"🔑"}</span>
+        <div class="grow">
+          <div style="font-size:13px;font-weight:700;margin-bottom:2px">${S.apiKey?"AI Code Checker ON":"AI Code Checker"}</div>
+          <div class="muted">${S.apiKey?"Claude will review your code":"Add Anthropic API key for AI feedback"}</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="showApiSetup()">${S.apiKey?"Change":"Set Up"}</button>
+      </div>
+    </div>
+
+    <!-- Lessons -->
+    <div class="sdiv">Lessons</div>
+    ${lessonCards}
+
+    ${allDone ? `<div class="card card-green mt16" style="text-align:center;padding:24px">
+      <div style="font-size:40px">🏆</div>
+      <h2 style="color:var(--g);margin:8px 0 4px">You finished all 10 lessons!</h2>
+      <p style="color:#6ee7b7;font-size:13px">You earned ${xp} XP. You're a Python coder now.</p>
+    </div>` : ""}
+
+    <!-- Footer -->
+    <div class="center mt16 muted" style="font-size:11px;line-height:1.8">
+      Save this page as a bookmark or<br>
+      Share → Add to Home Screen on iPhone 📱<br>
+      Progress auto-saves in your browser.
+    </div>
+  </div>
+
+  <!-- API key modal backdrop -->
+  <div id="apiModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;padding:40px 20px;overflow:auto">
+    <div class="card" style="max-width:440px;margin:0 auto;padding:24px">
+      <h2 style="margin-bottom:8px">🤖 AI Code Checker</h2>
+      <p class="mb16">Add your Anthropic API key to get Claude's feedback on your code challenges. Your key is saved locally in your browser only.</p>
+      <div class="mb12">
+        <div class="tag mb8">Anthropic API Key</div>
+        <input id="apiKeyInput" class="api-input" type="password" placeholder="sk-ant-..." value="${S.apiKey}">
+      </div>
+      <p class="muted mb16">Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. Free tier available. Without a key, challenges show expected output for self-checking.</p>
+      <div class="stack">
+        <button class="btn btn-g" onclick="saveApiKey()">Save Key</button>
+        <button class="btn btn-outline" onclick="closeApiModal()">Cancel / Skip</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderReading() {
+  const l = LESSONS[S.lessonIdx];
+  const p = S.progress[S.lessonIdx] || {};
+  const done = isComplete(S.lessonIdx);
+
+  return `
+  <div class="nav">
+    <button class="back" onclick="go('home')">‹</button>
+    <div class="grow">
+      <div class="tag">Lesson ${S.lessonIdx+1} of ${LESSONS.length}</div>
+      <div style="font-size:15px;font-weight:700">${l.emoji} ${l.title}</div>
+    </div>
+    <span class="badge-g">+50 XP</span>
+  </div>
+
+  <!-- Step indicator -->
+  <div style="padding:12px 20px 0;text-align:center">
+    <div class="dots">
+      <span class="dot on" title="Read"></span>
+      <span class="dot ${p.quizzes&&p.quizzes[0]!==undefined?'done':''}" title="Quiz 1"></span>
+      <span class="dot ${p.quizzes&&p.quizzes[1]!==undefined?'done':''}" title="Quiz 2"></span>
+      <span class="dot ${p.challenge!==undefined?'done':''}" title="Challenge"></span>
+    </div>
+    <div class="muted" style="font-size:11px">Read → Quiz 1 → Quiz 2 → Challenge</div>
+  </div>
+
+  <div class="pad" style="padding-bottom:100px">
+    <div style="margin-bottom:20px">
+      <div class="tag mb8">Concept</div>
+      <h2>${l.concept}</h2>
+    </div>
+
+    ${l.content.map(renderBlock).join("")}
+
+    <div class="sdiv">Ready?</div>
+    <button class="btn btn-g" onclick="go('quiz',${S.lessonIdx},0)">
+      ${p.quizzes&&p.quizzes[0]!==undefined ? "Redo Quiz →" : "Take the Quiz →"}
+    </button>
+    ${done ? `<button class="btn btn-outline mt8" onclick="go('challenge',${S.lessonIdx})">Go to Challenge →</button>` : ""}
+  </div>`;
+}
+
+function renderQuiz() {
+  const l = LESSONS[S.lessonIdx];
+  const quiz = l.quizzes[S.quizIdx];
+  const p = S.progress[S.lessonIdx] || {};
+
+  const opts = quiz.opts.map((o,i) => {
+    let cls = "";
+    if (S.quizDone) {
+      if (i === quiz.ans) cls = "ok";
+      else if (i === S.quizSel) cls = "bad";
+    } else if (i === S.quizSel) cls = "sel";
+    return `<button class="qopt ${cls}" onclick="${!S.quizDone?`selQuiz(${i})`:""}"}>
+      <span class="qletter">${String.fromCharCode(65+i)}</span>
+      <span>${escHtml(o)}</span>
+    </button>`;
+  }).join("");
+
+  const qText = escHtml(quiz.q).replace(/\n/g,"<br>");
+
+  return `
+  <div class="nav">
+    <button class="back" onclick="go('reading',${S.lessonIdx})">‹</button>
+    <div class="grow">
+      <div class="tag">Lesson ${S.lessonIdx+1} · Quiz ${S.quizIdx+1} of 2</div>
+      <div style="font-size:15px;font-weight:700">Test Your Knowledge</div>
+    </div>
+    <span class="badge-g">+10 XP</span>
+  </div>
+
+  <div class="pad" style="padding-bottom:80px">
+    <!-- Step dots -->
+    <div class="dots mb16" style="justify-content:flex-start">
+      <span class="dot ${p.quizzes&&p.quizzes[0]!==undefined?"done":"on"}"></span>
+      <span class="dot ${S.quizIdx>=1?'on':''}"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="card card-blue mb16">
+      <div class="tag mb8">Question ${S.quizIdx+1}</div>
+      <div style="font-size:14px;line-height:1.7;color:var(--t2)">${qText}</div>
+    </div>
+
+    <div style="margin-bottom:16px">${opts}</div>
+
+    ${S.quizDone ? `
+      <div class="feedback ${S.quizSel===quiz.ans?"card-green":"card-red"}">
+        <strong>${S.quizSel===quiz.ans?"✅ Correct!":"❌ Not quite"}</strong>
+        <span style="color:${S.quizSel===quiz.ans?"#6ee7b7":"#fca5a5"}">${quiz.exp}</span>
+      </div>
+      <button class="btn btn-g mt12" onclick="nextAfterQuiz()">
+        ${S.quizIdx===0 ? "Next Question →" : "Go to Challenge →"}
+      </button>
+    ` : `
+      <button class="btn btn-g" onclick="submitQuiz()" ${S.quizSel===null?"disabled":""}>
+        Submit Answer
+      </button>
+    `}
+  </div>`;
+}
+
+function renderChallenge() {
+  const l = LESSONS[S.lessonIdx];
+  const ch = l.challenge;
+  const p = S.progress[S.lessonIdx] || {};
+  const done = p.challenge !== undefined;
+
+  let feedbackHtml = "";
+  if (S.feedback) {
+    const cls = S.feedback.type === "correct" ? "card-green" :
+                S.feedback.type === "hint" ? "card-yellow" : "card-red";
+    feedbackHtml = `<div class="feedback ${cls}">
+      <strong>${S.feedback.type==="correct"?"✅ Great job!":S.feedback.type==="hint"?"🤔 Almost there":"❌ Needs work"}</strong>
+      <span style="color:${S.feedback.type==="correct"?"#6ee7b7":S.feedback.type==="hint"?"#fbbf24":"#fca5a5"}">${S.feedback.msg}</span>
+    </div>`;
+  }
+
+  return `
+  <div class="nav">
+    <button class="back" onclick="go('reading',${S.lessonIdx})">‹</button>
+    <div class="grow">
+      <div class="tag">Lesson ${S.lessonIdx+1} · Code Challenge</div>
+      <div style="font-size:15px;font-weight:700">✍️ ${ch.title}</div>
+    </div>
+    <span class="badge-g">+30 XP</span>
+  </div>
+
+  <div class="pad" style="padding-bottom:80px">
+    <!-- Task card -->
+    <div class="card card-blue mb16">
+      <div class="tag mb8">Your Task</div>
+      <div style="font-size:13px;color:#7dd3fc;line-height:1.75;white-space:pre-wrap">${escHtml(ch.desc)}</div>
+    </div>
+
+    <!-- Hint -->
+    <button class="btn btn-outline btn-sm mb12" onclick="toggleHint()">
+      ${S.hintShown?"🙈 Hide Hint":"💡 Show Hint"}
+    </button>
+    <div class="hint ${S.hintShown?"shown":""}" id="hintBox">
+      <div class="tag mb8">Hint</div>
+      <pre style="font-family:var(--font);font-size:12px;white-space:pre-wrap;color:#7dd3fc">${escHtml(ch.hint)}</pre>
+    </div>
+
+    <!-- Editor -->
+    <div class="tag mb8 mt12">Your Code</div>
+    <textarea class="editor" id="codeEditor" placeholder="Write your Python here..." oninput="updateCode(this.value)">${escHtml(S.code || ch.starter)}</textarea>
+
+    ${feedbackHtml}
+
+    <!-- Buttons -->
+    <div class="stack mt12">
+      ${S.checking ?
+        `<button class="btn btn-g" disabled><span class="spin"></span>&nbsp; Checking...</button>` :
+        `<button class="btn btn-g" onclick="checkCode()">
+          ${S.apiKey ? "🤖 Check with Claude" : "👁️ Check My Work"}
+        </button>`
+      }
+      ${done ? `<button class="btn btn-outline" onclick="go('home')">← Back to Lessons</button>` : ""}
+      ${S.lessonIdx < LESSONS.length-1 && done ?
+        `<button class="btn btn-g" onclick="go('reading',${S.lessonIdx+1})">Next Lesson →</button>` : ""}
+    </div>
+
+    <!-- No API key mode: show expected output -->
+    ${!S.apiKey ? `<div class="card mt16">
+      <div class="tag mb8">Expected Output</div>
+      <pre style="font-family:var(--font);font-size:12px;color:#a3e635;white-space:pre-wrap">${escHtml(ch.expected)}</pre>
+      <div class="muted mt8">Compare your output to this. Add an API key for AI feedback!</div>
+    </div>` : ""}
+  </div>`;
+}
+
+function renderDone() {
+  const xp = totalXP();
+  return `<div style="padding:60px 20px;text-align:center">
+    <div style="font-size:64px;margin-bottom:16px">🏆</div>
+    <h1 style="background:linear-gradient(135deg,#fff,var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px">
+      You did it!
+    </h1>
+    <p class="mb20">All 10 Python lessons complete. You earned <strong style="color:var(--g)">${xp} XP</strong>.</p>
+    <div class="card card-green mb16">
+      <div style="font-size:14px;color:#6ee7b7;line-height:1.8">
+        You now know:<br>
+        print · variables · math · strings<br>
+        input · if/elif/else · lists<br>
+        for loops · while loops · functions
+      </div>
+    </div>
+    <p class="muted mb20">What's next? Try building a small project — a quiz game, a to-do list, or a number guessing game using everything you learned!</p>
+    <button class="btn btn-g" onclick="go('home')">← Back to Home</button>
+  </div>`;
+}
+
+// ─────────────────────────────────────────────
+//  NAVIGATION
+// ─────────────────────────────────────────────
+function go(screen, lessonIdx, quizIdx) {
+  S.screen = screen;
+  if (lessonIdx !== undefined) S.lessonIdx = lessonIdx;
+  if (quizIdx !== undefined) {
+    S.quizIdx = quizIdx;
+    S.quizSel = null;
+    S.quizDone = false;
+  }
+  if (screen === "challenge") {
+    S.code = LESSONS[S.lessonIdx].challenge.starter;
+    S.feedback = null;
+    S.hintShown = false;
+    S.checking = false;
+  }
+  render();
+  window.scrollTo(0, 0);
+}
+
+// ─────────────────────────────────────────────
+//  QUIZ LOGIC
+// ─────────────────────────────────────────────
+function selQuiz(i) {
+  if (S.quizDone) return;
+  S.quizSel = i;
+  render();
+}
+
+function submitQuiz() {
+  if (S.quizSel === null) return;
+  S.quizDone = true;
+  const correct = S.quizSel === LESSONS[S.lessonIdx].quizzes[S.quizIdx].ans;
+
+  // Save progress
+  if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
+  if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
+  S.progress[S.lessonIdx].quizzes[S.quizIdx] = correct;
+  save();
+  render();
+}
+
+function nextAfterQuiz() {
+  if (S.quizIdx === 0) {
+    // Go to quiz 2
+    S.quizIdx = 1;
+    S.quizSel = null;
+    S.quizDone = false;
+  } else {
+    // Go to challenge
+    go("challenge", S.lessonIdx);
+  }
+  render();
+  window.scrollTo(0, 0);
+}
+
+// ─────────────────────────────────────────────
+//  CHALLENGE LOGIC
+// ─────────────────────────────────────────────
+function updateCode(val) {
+  S.code = val;
+  S.feedback = null;
+}
+
+function toggleHint() {
+  S.hintShown = !S.hintShown;
+  render();
+}
+
+async function checkCode() {
+  const code = S.code.trim();
+  if (!code || code === LESSONS[S.lessonIdx].challenge.starter.trim()) {
+    S.feedback = { type: "error", msg: "Write some code first! The starter comment doesn't count 😄" };
+    render();
+    return;
+  }
+
+  if (!S.apiKey) {
+    // No API: just mark as attempted and show expected
+    if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
+    if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
+    S.progress[S.lessonIdx].challenge = "attempted";
+    save();
+    S.feedback = { type: "hint", msg: "Nice try! Compare your code to the expected output below. Add an API key for detailed AI feedback." };
+    render();
+    return;
+  }
+
+  S.checking = true;
+  S.feedback = null;
+  render();
+
+  const l = LESSONS[S.lessonIdx];
+  const ch = l.challenge;
+
+  const systemPrompt = `You are PyLearn, a friendly and encouraging Python tutor for absolute beginners learning just for fun.
+Evaluate the student's code for the given challenge. Be SHORT (2-4 sentences). Be warm and encouraging.
+Start with exactly one of these emojis on its own line: ✅ (correct/working), 🤔 (close/partial), ❌ (has issues).
+Then give your feedback. If there are errors, explain them simply. Give hints but don't write the solution.
+Focus only on whether the code would correctly solve the task if run in Python.`;
+
+  const userMsg = `Task: ${ch.task}\nExpected output: ${ch.expected}\n\nStudent's code:\n\`\`\`python\n${code}\n\`\`\``;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": S.apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 300,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userMsg }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      throw new Error(err.error?.message || `API error ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text = data.content?.[0]?.text || "No response";
+
+    // Detect correctness from emoji
+    let type = "hint";
+    if (text.includes("✅")) type = "correct";
+    else if (text.includes("❌")) type = "error";
+
+    S.feedback = { type, msg: text.replace(/^[✅🤔❌]\s*/,"") };
+
+    if (type === "correct") {
+      if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
+      if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
+      S.progress[S.lessonIdx].challenge = "passed";
+      save();
+    }
+
+  } catch (e) {
+    S.feedback = {
+      type: "error",
+      msg: `Couldn't reach Claude: ${e.message}. Check your API key or try again. You can compare to the expected output manually.`
+    };
+  }
+
+  S.checking = false;
+  render();
+}
+
+// ─────────────────────────────────────────────
+//  API KEY MODAL
+// ─────────────────────────────────────────────
+function showApiSetup() {
+  document.getElementById("apiModal").style.display = "block";
+}
+
+function closeApiModal() {
+  document.getElementById("apiModal").style.display = "none";
+}
+
+function saveApiKey() {
+  const key = document.getElementById("apiKeyInput").value.trim();
+  S.apiKey = key;
+  save();
+  closeApiModal();
+  render();
+}
+
+// ─────────────────────────────────────────────
+//  MAIN RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const app = document.getElementById("app");
+  switch(S.screen) {
+    case "home":      app.innerHTML = renderHome(); break;
+    case "reading":   app.innerHTML = renderReading(); break;
+    case "quiz":      app.innerHTML = renderQuiz(); break;
+    case "challenge": app.innerHTML = renderChallenge(); break;
+    case "done":      app.innerHTML = renderDone(); break;
+  }
+}
+
+render();
+</script>
+</body>
+</html>
