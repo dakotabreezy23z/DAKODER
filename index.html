@@ -905,7 +905,6 @@ async function checkCode() {
   }
 
   if (!S.apiKey) {
-    // No API: just mark as attempted and show expected
     if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
     if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
     S.progress[S.lessonIdx].challenge = "attempted";
@@ -926,7 +925,7 @@ async function checkCode() {
 Evaluate the student's code for the given challenge. Be SHORT (2-4 sentences). Be warm and encouraging.
 Start with exactly one of these emojis on its own line: ✅ (correct/working), 🤔 (close/partial), ❌ (has issues).
 Then give your feedback. If there are errors, explain them simply. Give hints but don't write the solution.
-Focus only on whether the code would correctly solve the task if run in Python.`; //
+Focus only on whether the code would correctly solve the task if run in Python.`;
 
   const userMsg = `Task: ${ch.task}\nExpected output: ${ch.expected}\n\nStudent's code:\n\`\`\`python\n${code}\n\`\`\``;
 
@@ -940,7 +939,7 @@ Focus only on whether the code would correctly solve the task if run in Python.`
         "anthropic-dangerous-direct-browser-access": "true"
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: "claude-3-5-haiku-20241022",
         max_tokens: 300,
         system: systemPrompt,
         messages: [{ role: "user", content: userMsg }]
@@ -955,7 +954,6 @@ Focus only on whether the code would correctly solve the task if run in Python.`
     const data = await res.json();
     const text = data.content?.[0]?.text || "No response";
 
-    // Detect correctness from emoji
     let type = "hint";
     if (text.includes("✅")) type = "correct";
     else if (text.includes("❌")) type = "error";
@@ -964,7 +962,6 @@ Focus only on whether the code would correctly solve the task if run in Python.`
 
     if (type === "correct") {
       if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
-      if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
       S.progress[S.lessonIdx].challenge = "passed";
       save();
     }
@@ -972,7 +969,7 @@ Focus only on whether the code would correctly solve the task if run in Python.`
   } catch (e) {
     S.feedback = {
       type: "error",
-      msg: `Couldn't reach Claude: ${e.message}. Check your API key or try again. You can compare to the expected output manually.`
+      msg: `Couldn't reach Claude: ${e.message}. Check your API key or try again.`
     };
   }
 
@@ -980,9 +977,6 @@ Focus only on whether the code would correctly solve the task if run in Python.`
   render();
 }
 
-// ─────────────────────────────────────────────
-//  API KEY MODAL
-// ─────────────────────────────────────────────
 function showApiSetup() {
   document.getElementById("apiModal").style.display = "block";
 }
@@ -997,20 +991,6 @@ function saveApiKey() {
   save();
   closeApiModal();
   render();
-}
-
-// ─────────────────────────────────────────────
-//  MAIN RENDER
-// ─────────────────────────────────────────────
-function render() {
-  const app = document.getElementById("app");
-  switch(S.screen) {
-    case "home":      app.innerHTML = renderHome(); break;
-    case "reading":   app.innerHTML = renderReading(); break;
-    case "quiz":      app.innerHTML = renderQuiz(); break;
-    case "challenge": app.innerHTML = renderChallenge(); break;
-    case "done":      app.innerHTML = renderDone(); break;
-  }
 }
 
 render();
