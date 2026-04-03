@@ -11,21 +11,23 @@
   <link rel="icon" type="image/jpeg" href="DAKODER.image.jpg">
   <link rel="apple-touch-icon" href="DAKODER.image.jpg">
   <link rel="manifest" href="manifest.json">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     :root{
       --bg:#0a0e1a; --s1:#111827; --s2:#0f172a; --s3:#0d1117;
       --bd:#1e293b; --t1:#e2e8f0; --t2:#cbd5e1; --tm:#64748b; --ts:#475569;
       --g:#00ff88; --b:#06b6d4; --r:#ef4444; --y:#fbbf24; --o:#f97316;
-      --font:'Courier New',monospace;
+      --font:'Inter',sans-serif;
+      --font-code:'Courier New',monospace;
     }
     html,body{height:100%;overflow-x:hidden}
     body{font-family:var(--font);background:var(--bg);color:var(--t1);max-width:480px;margin:0 auto;
       padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
-    h1{font-size:26px;font-weight:900;line-height:1.2}
-    h2{font-size:17px;font-weight:800}
-    p{font-size:14px;line-height:1.75;color:var(--t2)}
-    strong{color:var(--t1)}
+    h1{font-size:32px;font-weight:800;line-height:1.15;letter-spacing:-0.5px}
+    h2{font-size:21px;font-weight:700;letter-spacing:-0.2px}
+    p{font-size:16px;line-height:1.75;color:var(--t2)}
+    strong{color:var(--t1);font-weight:700}
     a{color:var(--b);text-decoration:none}
 
     /* ── LAYOUT ── */
@@ -39,16 +41,16 @@
     .nav{position:sticky;top:0;z-index:99;background:var(--bg);
       border-bottom:1px solid var(--bd);padding:14px 20px;
       display:flex;align-items:center;gap:12px}
-    .back{background:none;border:none;color:var(--tm);font-size:22px;
+    .back{background:none;border:none;color:var(--tm);font-size:26px;
       cursor:pointer;padding:0;font-family:var(--font);line-height:1}
 
     /* ── BUTTONS ── */
-    .btn{width:100%;border:none;border-radius:14px;padding:15px;font-size:15px;
-      font-weight:800;cursor:pointer;font-family:var(--font);transition:opacity .15s}
+    .btn{width:100%;border:none;border-radius:14px;padding:17px;font-size:17px;
+      font-weight:700;cursor:pointer;font-family:var(--font);letter-spacing:0px;transition:opacity .15s}
     .btn-g{background:linear-gradient(135deg,var(--g),var(--b));color:#000}
     .btn-g:disabled{background:var(--s1);color:var(--ts);cursor:not-allowed}
     .btn-outline{background:var(--s1);border:1px solid var(--bd);color:var(--t2)}
-    .btn-sm{width:auto;padding:9px 16px;font-size:12px;border-radius:10px}
+    .btn-sm{width:auto;padding:10px 18px;font-size:14px;border-radius:10px}
 
     /* ── CARDS ── */
     .card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px}
@@ -58,9 +60,9 @@
     .card-yellow{background:#1c1208;border-color:#f5940044}
 
     /* ── TAGS / BADGES ── */
-    .tag{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ts)}
-    .badge-g{background:rgba(0,255,136,.1);color:var(--g);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700}
-    .badge-b{background:rgba(6,182,212,.1);color:var(--b);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700}
+    .tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ts);font-family:var(--font);font-weight:600}
+    .badge-g{background:rgba(0,255,136,.1);color:var(--g);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700;font-family:var(--font)}
+    .badge-b{background:rgba(6,182,212,.1);color:var(--b);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700;font-family:var(--font)}
 
     /* ── PROGRESS BAR ── */
     .prog-track{background:var(--bd);border-radius:99px;height:6px}
@@ -72,7 +74,7 @@
       padding:7px 14px;display:flex;align-items:center;justify-content:space-between}
     .cblock-code{background:var(--s3);border:1px solid var(--bd);padding:12px 14px}
     .cblock-out{background:#020617;border:1px solid var(--bd);border-top:1px solid #0d2040;padding:10px 14px}
-    .cblock-code pre,.cblock-out pre{font-family:var(--font);font-size:13px;line-height:1.75;
+    .cblock-code pre,.cblock-out pre{font-family:var(--font-code);font-size:13px;line-height:1.75;
       white-space:pre-wrap;word-break:break-word;margin:0}
     .cblock-out pre{color:#a3e635}
 
@@ -84,18 +86,18 @@
 
     /* ── QUIZ OPTIONS ── */
     .qopt{width:100%;background:var(--s1);border:1px solid var(--bd);border-radius:12px;
-      padding:13px 16px;text-align:left;font-size:13px;color:var(--t2);
-      cursor:pointer;display:flex;align-items:flex-start;gap:10px;
+      padding:15px 18px;text-align:left;font-size:16px;color:var(--t2);
+      cursor:pointer;display:flex;align-items:flex-start;gap:12px;
       font-family:var(--font);transition:all .15s;line-height:1.5}
     .qopt.sel{background:#1e293b;border-color:var(--b);color:var(--b)}
     .qopt.ok{background:#052e16;border-color:var(--g);color:var(--g)}
     .qopt.bad{background:#1c0a0a;border-color:var(--r);color:var(--r)}
-    .qletter{min-width:22px;height:22px;border-radius:6px;background:var(--bd);
-      display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--ts);flex-shrink:0;margin-top:1px}
+    .qletter{min-width:26px;height:26px;border-radius:6px;background:var(--bd);
+      display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ts);flex-shrink:0;margin-top:1px;font-family:var(--font-code)}
 
     /* ── CODE EDITOR ── */
-    .editor{width:100%;min-height:130px;background:var(--s3);border:1px solid var(--bd);
-      border-radius:12px;padding:14px;font-family:var(--font);font-size:13px;
+    .editor{width:100%;min-height:140px;background:var(--s3);border:1px solid var(--bd);
+      border-radius:12px;padding:14px;font-family:var(--font-code);font-size:14px;
       color:#7dd3fc;line-height:1.75;resize:vertical;outline:none;-webkit-appearance:none;
       caret-color:var(--g)}
     .editor:focus{border-color:var(--b)}
@@ -111,13 +113,13 @@
 
     /* ── HOME LESSON CARDS ── */
     .lcard{background:var(--s1);border:1px solid var(--bd);border-radius:14px;
-      padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;
-      transition:transform .12s;text-align:left;width:100%}
+      padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;
+      transition:transform .12s;text-align:left;width:100%;font-family:var(--font)}
     .lcard:active{transform:scale(.97)}
     .lcard.done{background:linear-gradient(135deg,#052e16,#064e3b);border-color:#00ff8833}
     .lcard.locked{opacity:.4;cursor:not-allowed}
-    .licon{width:46px;height:46px;border-radius:12px;background:var(--bd);
-      display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .licon{width:50px;height:50px;border-radius:12px;background:var(--bd);
+      display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
 
     /* ── SECTION DIVIDER ── */
     .sdiv{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g);
@@ -126,7 +128,7 @@
 
     /* ── API KEY SETUP ── */
     .api-input{width:100%;background:var(--s3);border:1px solid var(--bd);border-radius:12px;
-      padding:12px 14px;font-family:var(--font);font-size:13px;color:var(--t1);
+      padding:14px;font-family:var(--font);font-size:15px;color:var(--t1);
       outline:none;-webkit-appearance:none}
     .api-input:focus{border-color:var(--b)}
 
@@ -141,7 +143,7 @@
     /* ── MISC ── */
     .sep{height:1px;background:var(--bd);margin:16px 0}
     .center{text-align:center}
-    .muted{color:var(--tm);font-size:12px}
+    .muted{color:var(--tm);font-size:13px}
     .green{color:var(--g)} .blue{color:var(--b)} .red{color:var(--r)} .yellow{color:var(--y)}
     .mb8{margin-bottom:8px} .mb12{margin-bottom:12px} .mb16{margin-bottom:16px} .mb20{margin-bottom:20px}
     .mt8{margin-top:8px} .mt12{margin-top:12px} .mt16{margin-top:16px}
@@ -566,7 +568,7 @@ function renderHome() {
     <div style="margin-bottom:24px">
       <div class="row mb8" style="align-items:center;gap:12px">
         <img src="DAKODER.image.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;display:block;flex-shrink:0" onerror="this.style.display='none'">
-        <span style="font-size:13px;letter-spacing:3px;color:var(--g);text-transform:uppercase;font-weight:800">DAKODER</span>
+        <span style="font-size:13px;letter-spacing:3px;color:var(--g);text-transform:uppercase;font-weight:800;font-family:var(--font-code)">DAKODER</span>
       </div>
       <h1 style="background:linear-gradient(135deg,#fff 40%,var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">
         Learn Python.<br>No fluff.
