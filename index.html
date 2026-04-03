@@ -467,11 +467,11 @@ function hl(raw) {
 
     code = code.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
-    // Protect strings
+    // Protect strings — replace with placeholder that contains no digits
     const strs = [];
     code = code.replace(/("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, m => {
       strs.push(m);
-      return `\x01${strs.length-1}\x01`;
+      return `\x01STR${strs.length-1}END\x01`;
     });
 
     // Keywords
@@ -483,13 +483,13 @@ function hl(raw) {
         `<span style="color:#7dd3fc">$1</span>`);
     });
 
-    // Numbers
+    // Numbers — won't match inside STR...END placeholders
     code = code.replace(/\b(\d+\.?\d*)\b/g,
       `<span style="color:#f97316">$1</span>`);
 
     // Restore strings
     strs.forEach((s,i) => {
-      code = code.replace(`\x01${i}\x01`,
+      code = code.replace(`\x01STR${i}END\x01`,
         `<span style="color:#fbbf24">${s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}</span>`);
     });
 
@@ -564,9 +564,9 @@ function renderHome() {
   return `<div style="padding:24px 20px 60px">
     <!-- Header -->
     <div style="margin-bottom:24px">
-      <div class="row mb8">
-        <img src="DAKODER.image.jpg" style="width:36px;height:36px;border-radius:8px;object-fit:cover">
-        <span style="font-size:10px;letter-spacing:3px;color:var(--g);text-transform:uppercase;font-weight:700">DAKODER</span>
+      <div class="row mb8" style="align-items:center;gap:12px">
+        <img src="DAKODER.image.jpg" style="width:48px;height:48px;border-radius:12px;object-fit:cover;display:block;flex-shrink:0" onerror="this.style.display='none'">
+        <span style="font-size:13px;letter-spacing:3px;color:var(--g);text-transform:uppercase;font-weight:800">DAKODER</span>
       </div>
       <h1 style="background:linear-gradient(135deg,#fff 40%,var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">
         Learn Python.<br>No fluff.
