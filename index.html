@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="PyLearn">
+  <meta name="apple-mobile-web-app-title" content="DAKODER">
   <meta name="theme-color" content="#0a0e1a">
-  <title>DAKODER 🐍</title>
+  <title>DAKODER</title>
+  <link rel="icon" type="image/jpeg" href="icon.jpg">
+  <link rel="apple-touch-icon" href="icon.jpg">
+  <link rel="manifest" href="manifest.json">
   <style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
     :root{
@@ -251,7 +254,7 @@ const LESSONS = [
       {type:"text",text:"<strong>Important:</strong> input() always returns a <strong>string</strong>, even if the user types a number. To use it as a number, you must convert it with <strong>int()</strong> or <strong>float()</strong>."},
       {type:"code",code:`age_str = input("How old are you? ")\nage = int(age_str)         # convert to integer\nnext_year = age + 1\n\nprint(f"Next year you'll be {next_year}!")`,out:`How old are you? 22\nNext year you'll be 23!`},
       {type:"text",text:"You can chain the conversion on one line. Use <strong>float()</strong> if the number might have a decimal point."},
-      {type:"code",code:`price = float(input("Enter price: "))\ndiscounted = price * 0.9\nprint(f"10% off: ${discounted:.2f}")`,out:`Enter price: 49.99\n10% off: $44.99`},
+      {type:"code",code:`price = float(input("Enter price: "))\ndiscounted = price * 0.9\nprint(f"10% off: \${discounted:.2f}")`,out:`Enter price: 49.99\n10% off: $44.99`},
     ],
     quizzes:[
       {q:"What type does input() always return?",opts:["int","float","string","number"],ans:2,exp:"input() always returns a string, even if the user types a number. You have to convert it manually."},
@@ -423,7 +426,7 @@ load();
 // ─────────────────────────────────────────────
 function isComplete(idx) {
   const p = S.progress[idx];
-  return p && p.quizzes && p.quizzes.length === 2 && p.challenge !== undefined;
+  return p && p.quizzes && p.quizzes[0] !== undefined && p.quizzes[1] !== undefined && p.challenge !== undefined;
 }
 
 function isUnlocked(idx) {
@@ -545,7 +548,7 @@ function renderHome() {
       return `<span class="dot ${cl}"></span>`;
     }).join("");
 
-    return `<button class="lcard ${c?"done":""} ${!u?"locked":""}" onclick="${u?`go('reading',${i})`:""}">
+    return `<button class="lcard ${c?"done":""} ${!u?"locked":""}" onclick="${u?"go('reading',"+i+")":""}">
       <div class="licon">${c?"✅":!u?"🔒":l.emoji}</div>
       <div class="grow">
         <div class="tag" style="margin-bottom:3px">Lesson ${i+1} · ${l.concept}</div>
@@ -562,8 +565,8 @@ function renderHome() {
     <!-- Header -->
     <div style="margin-bottom:24px">
       <div class="row mb8">
-        <span style="font-size:26px">🐍</span>
-        <span style="font-size:10px;letter-spacing:3px;color:var(--g);text-transform:uppercase;font-weight:700">PyLearn</span>
+        <img src="icon.jpg" style="width:36px;height:36px;border-radius:8px;object-fit:cover">
+        <span style="font-size:10px;letter-spacing:3px;color:var(--g);text-transform:uppercase;font-weight:700">DAKODER</span>
       </div>
       <h1 style="background:linear-gradient(135deg,#fff 40%,var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">
         Learn Python.<br>No fluff.
@@ -686,7 +689,7 @@ function renderQuiz() {
       if (i === quiz.ans) cls = "ok";
       else if (i === S.quizSel) cls = "bad";
     } else if (i === S.quizSel) cls = "sel";
-    return `<button class="qopt ${cls}" onclick="${!S.quizDone?`selQuiz(${i})`:""}"}>
+    return `<button class="qopt ${cls}" onclick="${!S.quizDone?"selQuiz("+i+")":""}">
       <span class="qletter">${String.fromCharCode(65+i)}</span>
       <span>${escHtml(o)}</span>
     </button>`;
@@ -905,6 +908,7 @@ async function checkCode() {
   }
 
   if (!S.apiKey) {
+    // No API: just mark as attempted and show expected
     if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
     if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
     S.progress[S.lessonIdx].challenge = "attempted";
@@ -921,7 +925,7 @@ async function checkCode() {
   const l = LESSONS[S.lessonIdx];
   const ch = l.challenge;
 
-  const systemPrompt = `You are PyLearn, a friendly and encouraging Python tutor for absolute beginners learning just for fun.
+  const systemPrompt = `You are DAKODER, a friendly and encouraging Python tutor for absolute beginners learning just for fun.
 Evaluate the student's code for the given challenge. Be SHORT (2-4 sentences). Be warm and encouraging.
 Start with exactly one of these emojis on its own line: ✅ (correct/working), 🤔 (close/partial), ❌ (has issues).
 Then give your feedback. If there are errors, explain them simply. Give hints but don't write the solution.
@@ -939,7 +943,7 @@ Focus only on whether the code would correctly solve the task if run in Python.`
         "anthropic-dangerous-direct-browser-access": "true"
       },
       body: JSON.stringify({
-        model: "claude-3-5-haiku-20241022",
+        model: "claude-haiku-4-5-20251001",
         max_tokens: 300,
         system: systemPrompt,
         messages: [{ role: "user", content: userMsg }]
@@ -954,6 +958,7 @@ Focus only on whether the code would correctly solve the task if run in Python.`
     const data = await res.json();
     const text = data.content?.[0]?.text || "No response";
 
+    // Detect correctness from emoji
     let type = "hint";
     if (text.includes("✅")) type = "correct";
     else if (text.includes("❌")) type = "error";
@@ -962,6 +967,7 @@ Focus only on whether the code would correctly solve the task if run in Python.`
 
     if (type === "correct") {
       if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
+      if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
       S.progress[S.lessonIdx].challenge = "passed";
       save();
     }
@@ -969,7 +975,7 @@ Focus only on whether the code would correctly solve the task if run in Python.`
   } catch (e) {
     S.feedback = {
       type: "error",
-      msg: `Couldn't reach Claude: ${e.message}. Check your API key or try again.`
+      msg: `Couldn't reach Claude: ${e.message}. Check your API key or try again. You can compare to the expected output manually.`
     };
   }
 
@@ -977,6 +983,9 @@ Focus only on whether the code would correctly solve the task if run in Python.`
   render();
 }
 
+// ─────────────────────────────────────────────
+//  API KEY MODAL
+// ─────────────────────────────────────────────
 function showApiSetup() {
   document.getElementById("apiModal").style.display = "block";
 }
@@ -991,6 +1000,20 @@ function saveApiKey() {
   save();
   closeApiModal();
   render();
+}
+
+// ─────────────────────────────────────────────
+//  MAIN RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const app = document.getElementById("app");
+  switch(S.screen) {
+    case "home":      app.innerHTML = renderHome(); break;
+    case "reading":   app.innerHTML = renderReading(); break;
+    case "quiz":      app.innerHTML = renderQuiz(); break;
+    case "challenge": app.innerHTML = renderChallenge(); break;
+    case "done":      app.innerHTML = renderDone(); break;
+  }
 }
 
 render();
