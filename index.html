@@ -157,7 +157,41 @@
 // ─────────────────────────────────────────────
 const LESSONS = [
   {
-    id:0, emoji:"👋", title:"Hello, World!", concept:"Printing Output",
+    id:0, emoji:"📖", title:"The Language of Code", concept:"Coding Lingo 101",
+    content:[
+      {type:"text",text:"Before you write a single line of Python, let's learn how to <strong>read</strong> code. Every symbol means something. Once you know the lingo, nothing will look scary again."},
+      {type:"text",text:"<strong>🔵 Syntax</strong> — Coding has strict grammar rules called syntax. One missing quote, one wrong bracket, and your program crashes. That's normal — even pros hit syntax errors daily. The computer is just being picky."},
+      {type:"code",code:`print("Hello")   # ✅ correct syntax\nprint("Hello"    # ❌ missing closing ) → crash`,out:``},
+      {type:"text",text:"<strong>🟢 Functions</strong> — A function is a named action. You spot one by the word followed by parentheses <strong>()</strong>. Python comes with built-in functions, and you'll make your own later."},
+      {type:"code",code:`print()   # "print" is the function name\nlen()     # "len" finds the length of something\ninput()   # "input" asks the user to type something`,out:``},
+      {type:"text",text:"<strong>🟡 Arguments</strong> — The stuff you put <em>inside</em> the parentheses is called an argument. You're passing information into the function so it knows what to work with."},
+      {type:"code",code:`#       ↓ this whole part is the argument\nprint("Hello, World!")\n#             ↑ the function gets this text and prints it`,out:``},
+      {type:"text",text:"<strong>🔴 Strings</strong> — Any text wrapped in quotes is called a string. The quotes are what tell Python 'this is text, not a command'. Forget the quotes and Python gets confused."},
+      {type:"code",code:`"Hello"        # string using double quotes\n'Hello'        # string using single quotes — same thing\nHello          # ❌ no quotes → Python thinks it's a variable name`,out:``},
+      {type:"text",text:"<strong>🟣 Code Blocks</strong> — A code block is a group of lines that belong together. Python uses <strong>indentation</strong> (4 spaces or 1 tab) to show what's inside a block. You'll use this constantly with loops and if-statements."},
+      {type:"code",code:`if it_is_raining:\n    print("Bring an umbrella")   # ← inside the block (indented)\n    print("Wear a jacket")        # ← still inside\nprint("Have a good day")          # ← outside the block (no indent)`,out:``},
+      {type:"text",text:"<strong>⚪ Comments</strong> — A line starting with <strong>#</strong> is a comment. Python completely ignores it. Comments are notes you write for yourself (or other humans reading your code)."},
+      {type:"code",code:`# This is a comment — Python skips this line\nprint("But Python runs this")   # you can also comment at the end`,out:`But Python runs this`},
+      {type:"text",text:"<strong>🟠 Operators</strong> — Symbols that do things. The trickiest ones to know:"},
+      {type:"code",code:`=    # ASSIGNMENT — stores a value into a variable\n         # name = "Jordan" means: store "Jordan" in name\n\n==   # EQUALITY CHECK — asks "are these equal?"\n         # name == "Jordan" means: is name equal to "Jordan"?\n\n+    # addition for numbers, joins strings together\n!=   # NOT equal to`,out:``},
+      {type:"text",text:"<strong>🔥 Error Messages</strong> — When your code crashes, Python tells you why. Don't panic. The last line of the error is the most useful — it tells you what went wrong and which line caused it."},
+      {type:"code",code:`# If you see this:\n# SyntaxError: EOL while scanning string literal\n# It usually means you forgot a closing quote "\n\n# If you see:\n# NameError: name 'hello' is not defined\n# It means Python found a word it doesn't recognize`,out:``},
+    ],
+    quizzes:[
+      {q:"What are the 4 spaces (or tab) before a line of code called?",opts:["A comment","An argument","Indentation","A string"],ans:2,exp:"Indentation is how Python knows which lines belong inside a code block. It's not just style — it's required syntax."},
+      {q:"What is the difference between = and == ?",opts:["Nothing, they're the same","= checks equality, == stores a value","= stores a value, == checks equality","== is a typo"],ans:2,exp:"= is assignment (store this value). == is a question (are these equal?). Mixing them up is one of the most common beginner mistakes."},
+    ],
+    challenge:{
+      title:"Decode this code",
+      desc:"Look at this snippet and write a comment above each line explaining what it does in plain English:\n\n# Example:\n# This line stores the name Jordan in a variable\nname = \"Jordan\"\nprint(name)\n\nThere's no wrong answer — just show you can read the code!",
+      hint:"# line 1: ...\nname = \"Jordan\"\n# line 2: ...\nprint(name)",
+      starter:`# Write a comment above each line explaining what it does:\n\nname = "Jordan"\nprint(name)\n`,
+      task:"Add a comment above name = 'Jordan' explaining it stores a name, and a comment above print(name) explaining it displays the name.",
+      expected:"# stores the name Jordan in a variable\nname = \"Jordan\"\n# prints the value of name to the screen\nprint(name)"
+    }
+  },
+  {
+    id:1, emoji:"👋", title:"Hello, World!", concept:"Printing Output",
     content:[
       {type:"text",text:"Every coder's first step is making the computer say something. In Python you use the <strong>print()</strong> function. Whatever you put inside the parentheses (in quotes) gets displayed on screen."},
       {type:"code",code:`print("Hello, World!")\nprint("I'm learning Python!")\nprint("This is awesome 🔥")`,out:`Hello, World!\nI'm learning Python!\nThis is awesome 🔥`},
@@ -180,7 +214,7 @@ const LESSONS = [
     }
   },
   {
-    id:1, emoji:"📦", title:"Variables", concept:"Storing Data",
+    id:2, emoji:"📦", title:"Variables", concept:"Storing Data",
     content:[
       {type:"text",text:"A <strong>variable</strong> is a named container for storing a value. You create one with a single = sign (called the assignment operator). The name goes on the left, the value on the right."},
       {type:"code",code:`name = "Jordan"\nage = 21\nheight = 5.9\n\nprint(name)\nprint(age)`,out:`Jordan\n21`},
@@ -203,7 +237,7 @@ const LESSONS = [
     }
   },
   {
-    id:2, emoji:"🔢", title:"Numbers & Math", concept:"Operators & Calculations",
+    id:3, emoji:"🔢", title:"Numbers & Math", concept:"Operators & Calculations",
     content:[
       {type:"text",text:"Python handles all the math you'd expect, plus a few extras. The basic operators are + - * / and there are two more powerful ones you'll use a lot."},
       {type:"code",code:`print(10 + 3)   # 13  - addition\nprint(10 - 3)   # 7   - subtraction\nprint(10 * 3)   # 30  - multiplication\nprint(10 / 3)   # 3.33 - division\nprint(10 // 3)  # 3   - floor division (no decimal)\nprint(10 % 3)   # 1   - modulo (remainder)\nprint(2 ** 8)   # 256 - power (2 to the 8th)`,out:`13\n7\n30\n3.3333333333333335\n3\n1\n256`},
@@ -226,7 +260,7 @@ const LESSONS = [
     }
   },
   {
-    id:3, emoji:"✂️", title:"Strings", concept:"Text Manipulation",
+    id:4, emoji:"✂️", title:"Strings", concept:"Text Manipulation",
     content:[
       {type:"text",text:"Strings are how Python handles text. You already know how to print them — now let's do more powerful things with them. Strings have built-in <strong>methods</strong> (functions that belong to the string)."},
       {type:"code",code:`msg = "hello world"\n\nprint(msg.upper())       # all caps\nprint(msg.lower())       # all lowercase\nprint(msg.capitalize())  # First letter cap\nprint(msg.title())       # Every Word Cap\nprint(len(msg))          # number of characters\nprint(msg.replace("world", "Python"))`,out:`HELLO WORLD\nhello world\nHello world\nHello World\n11\nhello Python`},
@@ -249,7 +283,7 @@ const LESSONS = [
     }
   },
   {
-    id:4, emoji:"💬", title:"User Input", concept:"Interactive Programs",
+    id:5, emoji:"💬", title:"User Input", concept:"Interactive Programs",
     content:[
       {type:"text",text:"So far your programs have used fixed data. With <strong>input()</strong> you can ask the user to type something. Whatever they type gets stored as a string."},
       {type:"code",code:`name = input("What's your name? ")\nprint(f"Nice to meet you, {name}!")`,out:`What's your name? Jordan\nNice to meet you, Jordan!`},
@@ -272,7 +306,7 @@ const LESSONS = [
     }
   },
   {
-    id:5, emoji:"❓", title:"If / Elif / Else", concept:"Making Decisions",
+    id:6, emoji:"❓", title:"If / Elif / Else", concept:"Making Decisions",
     content:[
       {type:"text",text:"Your code can make decisions with <strong>if statements</strong>. If the condition is true, one block of code runs. Otherwise, the <strong>else</strong> block runs. <strong>Indentation</strong> (the 4 spaces before the code) tells Python what belongs inside the block."},
       {type:"code",code:`age = 20\n\nif age >= 18:\n    print("You can vote!")\nelse:\n    print("Not old enough yet.")`,out:`You can vote!`},
@@ -295,7 +329,7 @@ const LESSONS = [
     }
   },
   {
-    id:6, emoji:"📋", title:"Lists", concept:"Storing Collections",
+    id:7, emoji:"📋", title:"Lists", concept:"Storing Collections",
     content:[
       {type:"text",text:"A <strong>list</strong> holds multiple items in one variable. Items are written in square brackets [], separated by commas. Lists can hold strings, numbers, or a mix."},
       {type:"code",code:`fruits = ["apple", "mango", "grape", "banana"]\nnumbers = [10, 25, 3, 99, 7]\nmixed = ["Alice", 22, True, 3.14]\n\nprint(fruits)\nprint(len(fruits))    # number of items`,out:`['apple', 'mango', 'grape', 'banana']\n4`},
@@ -318,7 +352,7 @@ const LESSONS = [
     }
   },
   {
-    id:7, emoji:"🔁", title:"For Loops", concept:"Repeating with Sequences",
+    id:8, emoji:"🔁", title:"For Loops", concept:"Repeating with Sequences",
     content:[
       {type:"text",text:"A <strong>for loop</strong> repeats code for each item in a sequence. It's one of the most powerful tools in Python. The variable after <strong>for</strong> takes on each value one by one."},
       {type:"code",code:`fruits = ["apple", "mango", "grape"]\n\nfor fruit in fruits:\n    print(f"I like {fruit}")`,out:`I like apple\nI like mango\nI like grape`},
@@ -341,7 +375,7 @@ const LESSONS = [
     }
   },
   {
-    id:8, emoji:"⏳", title:"While Loops", concept:"Looping with Conditions",
+    id:9, emoji:"⏳", title:"While Loops", concept:"Looping with Conditions",
     content:[
       {type:"text",text:"A <strong>while loop</strong> keeps repeating as long as a condition is true. Unlike a for loop that counts items, a while loop runs based on a condition. You need to make sure the condition eventually becomes false — or it loops forever!"},
       {type:"code",code:`count = 1\n\nwhile count <= 5:\n    print(f"Count: {count}")\n    count = count + 1  # IMPORTANT: update count!\n\nprint("Done!")`,out:`Count: 1\nCount: 2\nCount: 3\nCount: 4\nCount: 5\nDone!`},
@@ -363,7 +397,7 @@ const LESSONS = [
     }
   },
   {
-    id:9, emoji:"🧩", title:"Functions", concept:"Reusable Code Blocks",
+    id:10, emoji:"🧩", title:"Functions", concept:"Reusable Code Blocks",
     content:[
       {type:"text",text:"A <strong>function</strong> is a reusable block of code you give a name. You <strong>define</strong> it once with <strong>def</strong>, then <strong>call</strong> it as many times as you want. You've already used built-in functions like print() and len() — now you'll make your own."},
       {type:"code",code:`def greet(name):\n    print(f"Hey, {name}! Welcome to Python.")\n\ngreet("Alex")\ngreet("Morgan")\ngreet("Sam")`,out:`Hey, Alex! Welcome to Python.\nHey, Morgan! Welcome to Python.\nHey, Sam! Welcome to Python.`},
@@ -573,7 +607,7 @@ function renderHome() {
       <h1 style="background:linear-gradient(135deg,#fff 40%,var(--g));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px">
         Learn Python.<br>No fluff.
       </h1>
-      <p style="color:var(--ts);font-size:13px">10 lessons · quizzes · coding challenges · AI feedback</p>
+      <p style="color:var(--ts);font-size:13px">11 lessons · quizzes · coding challenges · AI feedback</p>
     </div>
 
     <!-- XP card -->
@@ -608,7 +642,7 @@ function renderHome() {
 
     ${allDone ? `<div class="card card-green mt16" style="text-align:center;padding:24px">
       <div style="font-size:40px">🏆</div>
-      <h2 style="color:var(--g);margin:8px 0 4px">You finished all 10 lessons!</h2>
+      <h2 style="color:var(--g);margin:8px 0 4px">You finished all 11 lessons!</h2>
       <p style="color:#6ee7b7;font-size:13px">You earned ${xp} XP. You're a Python coder now.</p>
     </div>` : ""}
 
@@ -821,9 +855,9 @@ function renderDone() {
     <div class="card card-green mb16">
       <div style="font-size:14px;color:#6ee7b7;line-height:1.8">
         You now know:<br>
-        print · variables · math · strings<br>
-        input · if/elif/else · lists<br>
-        for loops · while loops · functions
+        lingo · print · variables · math<br>
+        strings · input · if/elif/else<br>
+        lists · for loops · while loops · functions
       </div>
     </div>
     <p class="muted mb20">What's next? Try building a small project — a quiz game, a to-do list, or a number guessing game using everything you learned!</p>
