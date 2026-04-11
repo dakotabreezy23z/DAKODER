@@ -255,8 +255,8 @@ const LESSONS = [
       desc:"Calculate a 18% tip on a $64 meal.\n\n• Store the meal price in a variable\n• Calculate the tip (price * 0.18)\n• Print both the tip amount and the total (price + tip)",
       hint:"tip = meal_price * 0.18\ntotal = meal_price + tip",
       starter:"meal_price = 64\n\n# Calculate tip (18%)\n\n# Print tip amount\n\n# Print total\n",
-      task:"Given meal_price = 64, calculate tip = meal_price * 0.18 and total = meal_price + tip. Print both tip and total.",
-      expected:"11.52\n75.52"
+      task:"Given meal_price = 64, calculate tip = meal_price * 0.18 and total = meal_price + tip. Print the tip amount and the total. Floating point results like 11.520000000000001 are perfectly fine.",
+      expected:"11.52 (or 11.520000000000001)\n75.52 (or 75.52)"
     }
   },
   {
@@ -425,17 +425,17 @@ const LESSONS = [
 //  STATE
 // ─────────────────────────────────────────────
 let S = {
-  screen: "home",      // home | reading | quiz | challenge | done
+  screen: "home",
   lessonIdx: 0,
-  quizIdx: 0,           // 0 or 1
+  quizIdx: 0,
   quizSel: null,
   quizDone: false,
   code: "",
-  checking: false,
-  feedback: null,       // { ok: bool, msg: string }
+  output: null,
+  runError: null,
   hintShown: false,
   xp: 0,
-  progress: {},         // { "lessonIdx": { quizzes:[bool,bool], challenge:bool } }
+  progress: {},
   apiKey: "",
 };
 
@@ -780,15 +780,19 @@ function renderChallenge() {
   const p = S.progress[S.lessonIdx] || {};
   const done = p.challenge !== undefined;
 
-  let feedbackHtml = "";
-  if (S.feedback) {
-    const cls = S.feedback.type === "correct" ? "card-green" :
-                S.feedback.type === "hint" ? "card-yellow" : "card-red";
-    feedbackHtml = `<div class="feedback ${cls}">
-      <strong>${S.feedback.type==="correct"?"✅ Great job!":S.feedback.type==="hint"?"🤔 Almost there":"❌ Needs work"}</strong>
-      <span style="color:${S.feedback.type==="correct"?"#6ee7b7":S.feedback.type==="hint"?"#fbbf24":"#fca5a5"}">${S.feedback.msg}</span>
-    </div>`;
-  }
+  const hasRun = S.output !== null || S.runError !== null;
+
+  const outputHtml = hasRun ? `
+    <div class="cblock mt12">
+      <div class="cblock-head">
+        <span class="tag">Output</span>
+        <span style="font-size:11px;color:${S.runError?"#ef4444":"#4b5563"}">${S.runError ? "⚠ error" : "✓ ran"}</span>
+      </div>
+      ${S.output ? `<div class="cblock-out"><pre>${escHtml(S.output)}</pre></div>` : ""}
+      ${S.runError ? `<div style="background:#1c0a0a;border:1px solid #ef444433;padding:10px 14px;border-top:none">
+        <pre style="font-family:var(--font);font-size:12px;color:#ef4444;white-space:pre-wrap;margin:0">${escHtml(S.runError)}</pre>
+      </div>` : ""}
+    </div>` : "";
 
   return `
   <div class="nav">
@@ -797,17 +801,14 @@ function renderChallenge() {
       <div class="tag">Lesson ${S.lessonIdx+1} · Code Challenge</div>
       <div style="font-size:15px;font-weight:700">✍️ ${ch.title}</div>
     </div>
-    <span class="badge-g">+30 XP</span>
   </div>
 
   <div class="pad" style="padding-bottom:80px">
-    <!-- Task card -->
     <div class="card card-blue mb16">
       <div class="tag mb8">Your Task</div>
       <div style="font-size:13px;color:#7dd3fc;line-height:1.75;white-space:pre-wrap">${escHtml(ch.desc)}</div>
     </div>
 
-    <!-- Hint -->
     <button class="btn btn-outline btn-sm mb12" onclick="toggleHint()">
       ${S.hintShown?"🙈 Hide Hint":"💡 Show Hint"}
     </button>
@@ -816,31 +817,17 @@ function renderChallenge() {
       <pre style="font-family:var(--font);font-size:12px;white-space:pre-wrap;color:#7dd3fc">${escHtml(ch.hint)}</pre>
     </div>
 
-    <!-- Editor -->
     <div class="tag mb8 mt12">Your Code</div>
     <textarea class="editor" id="codeEditor" placeholder="Write your Python here..." oninput="updateCode(this.value)">${escHtml(S.code || ch.starter)}</textarea>
 
-    ${feedbackHtml}
+    ${outputHtml}
 
-    <!-- Buttons -->
     <div class="stack mt12">
-      ${S.checking ?
-        `<button class="btn btn-g" disabled><span class="spin"></span>&nbsp; Checking...</button>` :
-        `<button class="btn btn-g" onclick="checkCode()">
-          ${S.apiKey ? "🤖 Check with Claude" : "👁️ Check My Work"}
-        </button>`
-      }
+      <button class="btn btn-g" onclick="checkCode()">▶ Run Code</button>
+      ${done && S.lessonIdx < LESSONS.length-1 ?
+        `<button class="btn btn-outline" onclick="go('reading',${S.lessonIdx+1})">Next Lesson →</button>` : ""}
       ${done ? `<button class="btn btn-outline" onclick="go('home')">← Back to Lessons</button>` : ""}
-      ${S.lessonIdx < LESSONS.length-1 && done ?
-        `<button class="btn btn-g" onclick="go('reading',${S.lessonIdx+1})">Next Lesson →</button>` : ""}
     </div>
-
-    <!-- No API key mode: show expected output -->
-    ${!S.apiKey ? `<div class="card mt16">
-      <div class="tag mb8">Expected Output</div>
-      <pre style="font-family:var(--font);font-size:12px;color:#a3e635;white-space:pre-wrap">${escHtml(ch.expected)}</pre>
-      <div class="muted mt8">Compare your output to this. Add an API key for AI feedback!</div>
-    </div>` : ""}
   </div>`;
 }
 
@@ -878,9 +865,9 @@ function go(screen, lessonIdx, quizIdx) {
   }
   if (screen === "challenge") {
     S.code = LESSONS[S.lessonIdx].challenge.starter;
-    S.feedback = null;
+    S.output = null;
+    S.runError = null;
     S.hintShown = false;
-    S.checking = false;
   }
   render();
   window.scrollTo(0, 0);
@@ -927,7 +914,8 @@ function nextAfterQuiz() {
 // ─────────────────────────────────────────────
 function updateCode(val) {
   S.code = val;
-  S.feedback = null;
+  S.output = null;
+  S.runError = null;
 }
 
 function toggleHint() {
@@ -935,87 +923,232 @@ function toggleHint() {
   render();
 }
 
-async function checkCode() {
-  const code = S.code.trim();
-  if (!code || code === LESSONS[S.lessonIdx].challenge.starter.trim()) {
-    S.feedback = { type: "error", msg: "Write some code first! The starter comment doesn't count 😄" };
-    render();
-    return;
+// ─────────────────────────────────────────────
+//  MINI PYTHON RUNNER
+// ─────────────────────────────────────────────
+function runPython(code) {
+  const output = [];
+  const errors = [];
+
+  // Block anything dangerous
+  const banned = ["fetch","XMLHttpRequest","eval","Function(","import ","__import__","exec(","open(","os.","sys.","subprocess"];
+  for (const b of banned) {
+    if (code.includes(b)) return { ok: false, output: [], error: `'${b}' is not supported in this runner.` };
   }
 
-  if (!S.apiKey) {
-    // No API: just mark as attempted and show expected
-    if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
-    if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
-    S.progress[S.lessonIdx].challenge = "attempted";
-    save();
-    S.feedback = { type: "hint", msg: "Nice try! Compare your code to the expected output below. Add an API key for detailed AI feedback." };
-    render();
-    return;
+  // ── Translate Python → JS ──────────────────
+  let js = code;
+
+  // Remove type annotations e.g. x: int = 5
+  js = js.replace(/(\w+)\s*:\s*\w+\s*=/g, "$1 =");
+
+  // Comments
+  js = js.replace(/#[^\n]*/g, "");
+
+  // Booleans & None
+  js = js.replace(/\bTrue\b/g, "true").replace(/\bFalse\b/g, "false").replace(/\bNone\b/g, "null");
+
+  // and / or / not
+  js = js.replace(/\band\b/g, "&&").replace(/\bor\b/g, "||").replace(/\bnot\b/g, "!");
+
+  // f-strings: f"..." or f'...'
+  js = js.replace(/f"((?:[^"\\]|\\.)*)"/g, (_, s) => '`' + s.replace(/\{/g,'${') + '`');
+  js = js.replace(/f'((?:[^'\\]|\\.)*)'/g, (_, s) => '`' + s.replace(/\{/g,'${') + '`');
+
+  // print(...) — handle end= keyword
+  js = js.replace(/print\(([^)]*),\s*end\s*=\s*["']([^"']*)["']\)/g, (_, args, end) => {
+    return `__print__(${args}, {end: ${JSON.stringify(end)}})`;
+  });
+  js = js.replace(/print\(([^)]*)\)/g, "__print__($1)");
+
+  // input() — return empty string (can't prompt in runner)
+  js = js.replace(/input\([^)]*\)/g, '""');
+
+  // Python string methods
+  js = js.replace(/\.upper\(\)/g, ".toUpperCase()");
+  js = js.replace(/\.lower\(\)/g, ".toLowerCase()");
+  js = js.replace(/\.strip\(\)/g, ".trim()");
+  js = js.replace(/\.capitalize\(\)/g, ".replace(/^./, c => c.toUpperCase())");
+  js = js.replace(/\.title\(\)/g, ".replace(/\\b\\w/g, c => c.toUpperCase())");
+  js = js.replace(/\.replace\(/g, ".replace(");
+
+  // len()
+  js = js.replace(/\blen\(([^)]+)\)/g, "($1).length");
+
+  // range()
+  js = js.replace(/\brange\(([^)]+)\)/g, (_, args) => {
+    const parts = args.split(",").map(s => s.trim());
+    if (parts.length === 1) return `__range__(0, ${parts[0]}, 1)`;
+    if (parts.length === 2) return `__range__(${parts[0]}, ${parts[1]}, 1)`;
+    return `__range__(${parts[0]}, ${parts[1]}, ${parts[2]})`;
+  });
+
+  // List append / remove / sort
+  js = js.replace(/\.append\(/g, ".push(");
+  js = js.replace(/(\w+)\.sort\(\)/g, "$1.sort()");
+  js = js.replace(/(\w+)\.remove\(([^)]+)\)/g, (_, list, val) =>
+    `${list}.splice(${list}.indexOf(${val}), 1)`);
+
+  // int() float() str()
+  js = js.replace(/\bint\(([^)]+)\)/g, "Math.trunc(Number($1))");
+  js = js.replace(/\bfloat\(([^)]+)\)/g, "Number($1)");
+  js = js.replace(/\bstr\(([^)]+)\)/g, "String($1)");
+  js = js.replace(/\babs\(([^)]+)\)/g, "Math.abs($1)");
+  js = js.replace(/\bround\(([^)]+)\)/g, "Math.round($1)");
+
+  // Python list display: convert JS arrays to Python-style strings for print
+  // ** / floor division / modulo already work in JS
+
+  // Python ** power operator
+  js = js.replace(/(\w[\w.]*|\)|\d)\s*\*\*\s*(\w[\w.]*|\(|\d)/g, "Math.pow($1,$2)");
+
+  // Floor division //
+  js = js.replace(/\/\//g, "/~~FLOORDIV~~");
+  js = js.replace(/(\S+)\s*\/~~FLOORDIV~~\s*(\S+)/g, "Math.floor($1 / $2)");
+
+  // elif → else if, Python colons → JS braces (indentation-based)
+  js = convertBlocks(js);
+
+  // ── Execute ────────────────────────────────
+  let printBuf = "";
+
+  function __range__(start, stop, step) {
+    const result = [];
+    if (step > 0) { for (let i = start; i < stop; i += step) result.push(i); }
+    else { for (let i = start; i > stop; i += step) result.push(i); }
+    return result;
   }
 
-  S.checking = true;
-  S.feedback = null;
-  render();
+  function pyRepr(val) {
+    if (Array.isArray(val)) return "[" + val.map(pyRepr).join(", ") + "]";
+    if (typeof val === "string") return "'" + val + "'";
+    if (val === true) return "True";
+    if (val === false) return "False";
+    if (val === null) return "None";
+    return String(val);
+  }
 
-  const l = LESSONS[S.lessonIdx];
-  const ch = l.challenge;
-
-  const systemPrompt = `You are DAKODER, a friendly and encouraging Python tutor for absolute beginners learning just for fun.
-Evaluate the student's code for the given challenge. Be SHORT (2-4 sentences). Be warm and encouraging.
-Start with exactly one of these emojis on its own line: ✅ (correct/working), 🤔 (close/partial), ❌ (has issues).
-Then give your feedback. If there are errors, explain them simply. Give hints but don't write the solution.
-Focus only on whether the code would correctly solve the task if run in Python.`;
-
-  const userMsg = `Task: ${ch.task}\nExpected output: ${ch.expected}\n\nStudent's code:\n\`\`\`python\n${code}\n\`\`\``;
+  function __print__(...args) {
+    let end = "\n", items = [];
+    // check last arg for options object
+    if (args.length > 0 && typeof args[args.length-1] === "object" && args[args.length-1] !== null && !Array.isArray(args[args.length-1]) && "end" in args[args.length-1]) {
+      const opts = args.pop();
+      end = opts.end;
+    }
+    for (const a of args) {
+      if (Array.isArray(a)) items.push("[" + a.map(pyRepr).join(", ") + "]");
+      else if (a === true) items.push("True");
+      else if (a === false) items.push("False");
+      else if (a === null) items.push("None");
+      else items.push(String(a));
+    }
+    printBuf += items.join(" ") + end;
+  }
 
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": S.apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 300,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userMsg }]
-      })
-    });
+    new Function("__print__", "__range__", js)(__print__, __range__);
+    return { ok: true, output: printBuf.trimEnd() };
+  } catch(e) {
+    // Give friendly error messages
+    let msg = e.message;
+    if (msg.includes("is not defined")) {
+      const name = msg.match(/(\w+) is not defined/)?.[1];
+      msg = `NameError: '${name}' is not defined. Did you forget to create this variable first?`;
+    } else if (msg.includes("is not a function")) {
+      msg = `TypeError: You're calling something as a function that isn't one. Check your parentheses.`;
+    } else if (msg.includes("Unexpected token")) {
+      msg = `SyntaxError: Something looks off — check for missing quotes, colons, or parentheses.`;
+    } else if (msg.includes("Cannot read prop")) {
+      msg = `TypeError: Tried to use a value that doesn't exist yet. Check your variable names.`;
+    }
+    return { ok: false, output: printBuf.trimEnd(), error: msg };
+  }
+}
 
-    if (!res.ok) {
-      const err = await res.json().catch(()=>({}));
-      throw new Error(err.error?.message || `API error ${res.status}`);
+// ── Convert indentation blocks to JS braces ─
+function convertBlocks(code) {
+  const lines = code.split("\n");
+  const out = [];
+  const indentStack = [0];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trimEnd();
+    if (!trimmed) { out.push(""); continue; }
+
+    const indent = line.match(/^(\s*)/)[1].length;
+    const content = trimmed.trim();
+
+    // Close blocks for dedent
+    while (indent < indentStack[indentStack.length - 1]) {
+      out.push(" ".repeat(indentStack[indentStack.length - 2] || 0) + "}");
+      indentStack.pop();
     }
 
-    const data = await res.json();
-    const text = data.content?.[0]?.text || "No response";
+    // Translate keywords that open blocks
+    let jsLine = content;
 
-    // Detect correctness from emoji
-    let type = "hint";
-    if (text.includes("✅")) type = "correct";
-    else if (text.includes("❌")) type = "error";
+    // for x in list:
+    jsLine = jsLine.replace(/^for\s+(\w+)\s+in\s+(.+):$/, (_, v, iterable) =>
+      `for (const ${v} of ${iterable}) {`);
 
-    S.feedback = { type, msg: text.replace(/^[✅🤔❌]\s*/,"") };
+    // while condition:
+    jsLine = jsLine.replace(/^while\s+(.+):$/, (_, cond) => `while (${cond}) {`);
 
-    if (type === "correct") {
-      if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
-      if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
-      S.progress[S.lessonIdx].challenge = "passed";
-      save();
+    // if condition:
+    jsLine = jsLine.replace(/^if\s+(.+):$/, (_, cond) => `if (${cond}) {`);
+
+    // elif condition:
+    jsLine = jsLine.replace(/^elif\s+(.+):$/, (_, cond) => `} else if (${cond}) {`);
+
+    // else:
+    jsLine = jsLine.replace(/^else:$/, "} else {");
+
+    // def name(args):
+    jsLine = jsLine.replace(/^def\s+(\w+)\s*\((.*)\)\s*:$/, (_, name, args) =>
+      `function ${name}(${args}) {`);
+
+    // pass → nothing
+    jsLine = jsLine.replace(/^pass$/, "");
+
+    const opensBlock = jsLine.trimEnd().endsWith("{");
+
+    out.push(" ".repeat(indent) + jsLine);
+
+    if (opensBlock) {
+      indentStack.push(indent + 4);
     }
-
-  } catch (e) {
-    S.feedback = {
-      type: "error",
-      msg: `Couldn't reach Claude: ${e.message}. Check your API key or try again. You can compare to the expected output manually.`
-    };
   }
 
-  S.checking = false;
+  // Close any remaining open blocks
+  while (indentStack.length > 1) {
+    out.push("}");
+    indentStack.pop();
+  }
+
+  return out.join("\n");
+}
+
+// ─────────────────────────────────────────────
+function checkCode() {
+  const code = S.code.trim();
+  if (!code || code === LESSONS[S.lessonIdx].challenge.starter.trim()) {
+    S.output = null;
+    S.runError = "Write some code first!";
+    render();
+    return;
+  }
+
+  const result = runPython(code);
+
+  // Mark as attempted regardless
+  if (!S.progress[S.lessonIdx]) S.progress[S.lessonIdx] = {};
+  if (!S.progress[S.lessonIdx].quizzes) S.progress[S.lessonIdx].quizzes = [];
+  S.progress[S.lessonIdx].challenge = "ran";
+  save();
+
+  S.output = result.output || null;
+  S.runError = result.ok ? null : result.error;
   render();
 }
 
